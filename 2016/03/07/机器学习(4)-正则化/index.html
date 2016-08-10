@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习(4)-正则化 | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="过拟合通过机器学习，得到的模型可以非常好的适应训练集，代价函数loss值接近0，在训练集上的准确率接近100%。但是如果扩展到训练集意外的数据，准确率有下降很多。这就是产生了过拟合现象。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习(4)-正则化">
+<meta property="og:url" content="http://kangbing.github.io/2016/03/07/机器学习(4)-正则化/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="过拟合通过机器学习，得到的模型可以非常好的适应训练集，代价函数loss值接近0，在训练集上的准确率接近100%。但是如果扩展到训练集意外的数据，准确率有下降很多。这就是产生了过拟合现象。">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0003.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0004.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0005.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0006.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0006.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0007.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0008.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0009.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0010.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0011.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/ml0013.jpg">
+<meta property="og:updated_time" content="2016-08-09T15:40:21.403Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="机器学习(4)-正则化">
+<meta name="twitter:description" content="过拟合通过机器学习，得到的模型可以非常好的适应训练集，代价函数loss值接近0，在训练集上的准确率接近100%。但是如果扩展到训练集意外的数据，准确率有下降很多。这就是产生了过拟合现象。">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/google/" style="font-size: 10px;">google</a> <a href="/tags/机器学习-Machine-Learning/" style="font-size: 20px;">机器学习, Machine Learning</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-机器学习(4)-正则化" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/03/07/机器学习(4)-正则化/" class="article-date">
+      <time datetime="2016-03-07T15:12:53.000Z" itemprop="datePublished">2016-03-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习(4)-正则化
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习-Machine-Learning/">机器学习, Machine Learning</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="过拟合">过拟合</h2><p>通过机器学习，得到的模型可以非常好的适应训练集，代价函数loss值接近0，在训练集上的准确率接近100%。但是如果扩展到训练集意外的数据，准确率有下降很多。这就是产生了过拟合现象。</p>
+<ul>
+<li><a id="more"></a>
+<img src="http://7xras4.com1.z0.glb.clouddn.com/ml0003.jpg" alt="线性回归正则化例子"><br>上图中是线性回归的例子，第一个是欠拟合，第二个是正好，第三个则是过拟合了。<br>在逻辑回归也存在过拟合的问题。下图三个分别为欠拟合、正好、过拟合。<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0004.jpg" alt="逻辑回归正则化例子"></li>
+</ul>
+<p>当产生了过拟合时，可以通过以下方法解决：</p>
+<ul>
+<li>抛弃一些训练使用的特征。或者使用模型选择算法。</li>
+<li>正则化。保留所有的特征，但是可以通过参数$\theta_j$减少特征的影响。</li>
+</ul>
+<h2 id="代价函数">代价函数</h2><p>在线性回归过拟合的例子中，主要是因为高次幂特征的影响，产生了过拟合；减少这些特征的影响即可。它的回归模型为<br>$$<br>h_\theta(x)=\theta_0+\theta_1x+\theta_2x^2+\theta_3x^3+\theta_4x^4<br>$$<br>重新定义代价函数<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0005.jpg" alt=""><br>这样的话，参数$\theta_3$、$\theta_4$将非常小。高次幂的影响就非常小了。上面是对2个高次幂特征进行了惩罚。<br>如果要对所有参数$\theta$进行惩罚，一般通用的代价函数为:<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0006.jpg" alt=""><br>注意，不对$\theta_0$进行惩罚。$\lambda$叫做正则化参数(Regularization Parameter)。<br>$\lambda$选取非常重要，如果太小，将没有太大影响；如果太大，造成$h_\theta(x)=\theta_0$，产生欠拟合。</p>
+<h2 id="正则化线性回归">正则化线性回归</h2><p>线性回归，增加正则化后的代价函数为：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0006.jpg" alt=""><br>因为不对$\theta_0$进行正则化，所以梯度下降分2中情况<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0007.jpg" alt=""><br>可以看出，增加正则化后，每次参数更新都比原来减小了一个值</p>
+<h2 id="正则化逻辑回归">正则化逻辑回归</h2><p>对于逻辑回归，增加正则化后的代价函数为：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0008.jpg" alt=""><br>梯度下降过程为：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0009.jpg" alt=""></p>
+<p>逻辑回归和线性回归的正则化梯度下降看上去类似，但是它们的$h_\theta(x)$，不同。</p>
+<h2 id="实验">实验</h2><p>首先画出样本分布图<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0010.jpg" alt=""><br>之后设置不同的$\lambda$，查看拟合效果<br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0011.jpg" alt=""><br><img src="http://7xras4.com1.z0.glb.clouddn.com/ml0013.jpg" alt=""></p>
+<p>参考：<a href="http://ai.ia.agh.edu.pl/wiki/_media/pl:dydaktyka:ml:ex2.pdf" target="_blank" rel="external">Programming Exercise 2: Logistic Regression</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2016年03月07日 - 23时12分</p>
+        <p><span>最后更新:</span>2016年08月09日 - 23时40分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/03/07/机器学习(4)-正则化/" title="机器学习(4)-正则化">http://kangbing.github.io/2016/03/07/机器学习(4)-正则化/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2016/03/07/机器学习(4)-正则化/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/03/09/机器学习(5)-逻辑回归练习/">
+                    机器学习(5)-逻辑回归练习
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/03/06/机器学习(3)-逻辑回归/">
+                    机器学习(3)-逻辑回归
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#过拟合"><span class="toc-number">1.</span> <span class="toc-text">过拟合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代价函数"><span class="toc-number">2.</span> <span class="toc-text">代价函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#正则化线性回归"><span class="toc-number">3.</span> <span class="toc-text">正则化线性回归</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#正则化逻辑回归"><span class="toc-number">4.</span> <span class="toc-text">正则化逻辑回归</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实验"><span class="toc-number">5.</span> <span class="toc-text">实验</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="2016/03/07/机器学习(4)-正则化/" data-title="机器学习(4)-正则化" data-url="http://kangbing.github.io/2016/03/07/机器学习(4)-正则化/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kangbing"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/03/09/机器学习(5)-逻辑回归练习/" title="上一篇: 机器学习(5)-逻辑回归练习">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/03/06/机器学习(3)-逻辑回归/" title="下一篇: 机器学习(3)-逻辑回归">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2016 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>
