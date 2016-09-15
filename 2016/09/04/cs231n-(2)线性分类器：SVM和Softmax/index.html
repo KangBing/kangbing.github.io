@@ -17,7 +17,7 @@
 <meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n2_04.jpeg">
 <meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n2_05.jpeg">
 <meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n2_06.jpeg">
-<meta property="og:updated_time" content="2016-09-09T15:41:33.628Z">
+<meta property="og:updated_time" content="2016-09-15T15:07:38.266Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cs231n-(2)线性分类器：SVM和Softmax">
 <meta name="twitter:description" content="概述上节讲到了图像分类以及kNN算法，kNN用作图像分类效果并不好。效果更好的分类算法是神经网络和卷积神经网络，它主要包括2部分1、评分函数score function，把原数据映射为一个得分。2、损失函数loss function，衡量预测得分和真实标签之间的差距。最终的优化问题是最小化损失函数。">
@@ -136,7 +136,7 @@
                         
                             <li><a href="/archives/">所有文章</a></li>
                         
-                            <li><a href="/tags/">标签云</a></li>
+                            <li><a href="/tags/">分类和标签</a></li>
                         
                             <li><a href="/about/">关于我</a></li>
                         
@@ -158,7 +158,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/DeepLearning-kNN-cs231n/" style="font-size: 10px;">DeepLearning,kNN,cs231n</a> <a href="/tags/DeepLearning-softmax-cs231n/" style="font-size: 10px;">DeepLearning,softmax,cs231n</a> <a href="/tags/google/" style="font-size: 10px;">google</a> <a href="/tags/机器学习-Machine-Learning/" style="font-size: 20px;">机器学习, Machine Learning</a>
+                        <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Machine-Learning/" style="font-size: 17.5px;">Machine Learning</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 15px;">cs231n</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 17.5px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 10px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
                     </div>
                 </section>
                 
@@ -215,7 +215,7 @@
                 
                     <li><a href="/archives/">所有文章</a></li>
                 
-                    <li><a href="/tags/">标签云</a></li>
+                    <li><a href="/tags/">分类和标签</a></li>
                 
                     <li><a href="/about/">关于我</a></li>
                 
@@ -261,10 +261,14 @@
       
       <div class="article-info article-info-post">
         
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning-softmax-cs231n/">DeepLearning,softmax,cs231n</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/softmax/">softmax</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -299,13 +303,17 @@
 <p><strong>其他形式的SVM</strong>：本节的多类SVM只是一种，还有其他形式。</p>
 <h2 id="Softmax分类器">Softmax分类器</h2><p>除了SVM分类器外，还有一种常用的叫做<strong>Softmax分类器</strong>，它是二元逻辑回归泛化到多元的情况。Softmax分类器的输出不是得分，而是对应类别的概率。Softmax分类器中，映射函数<strong>$f(x_i; W) =  W x_i$</strong>并没改变，把得分当做未归一化的对数概率，把hinge loss替换为<strong>交叉熵</strong> loss:<br>$$<br>L_i = -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \hspace{0.5in} \text{or equivalently} \hspace{0.5in} L_i = -f_{y_i} + \log\sum_j e^{f_j}<br>$$<br>其中,<strong>$f_j$</strong>表示第j类的得分。整个数据集的loss是<strong>$L_i$</strong>加上正则化项<strong>$R(W)$</strong>。函数<strong>$f_j(z) = \frac{e^{z_j}}{\sum_k e^{z_k}}$</strong>叫做<strong>softmax函数</strong>，它把得分向量转换为概率向量。</p>
 <p><strong>信息论角度</strong>：一个真实分布<strong>$p$</strong>和气估计分布<strong>$q$</strong>的交叉熵定义如下：<br>$$<br>H(p,q)=-\sum_xp(x) \log q(x)<br>$$<br>Softmax分类器是最小化估计的分布（$q = e^{f_{y_i}}  / \sum_j e^{f_j}$）和真实分布（$p=[0,…,1,…,0]$，只有第$y<em>i$个为1）之间交叉熵。交叉熵可以看做熵和相对熵的和相对熵的和**$H(p,q) = H(p) + D</em>{KL}(p||q)$<strong>，真实分布</strong>$p$**的熵是零，所以最小化交叉熵等价于最小化相对熵。</p>
-<p><strong>概率解释</strong>：公式<br>$$<br>P(y_i \mid x_i; W) = \frac{e^{f_{y_i}}}{\sum_j e^{f_j} }<br>$$<br>已知输入数据<strong>$x_i$</strong>和权重参数<strong>$W$</strong>，上式可以看做对应类别<strong>$y_i$</strong>的归一化概率。评价函数的输出向量没有归一化，直接当做对数概率的输入，之后用对数概率除以所有概率的和来进行归一化，这样概率的和为1。从概率论角度看，我们再最小化正确分类的负概率（即最大化正确分类的概率），这是最大似然估计（Maximum Likelihood Estimation）。这样损失函数中的正则化部分<strong>$R(W)$</strong>可以看过权重矩阵<strong>$W$</strong>的高斯先验，这样最大似然估计变成了最大后验概率估计（Maximum a posteriori）。</p>
+<p><strong>概率解释</strong>：公式<br>
+$$
+P(y_i \mid x_i; W) = \frac{e^{f_{y_i}}}{\sum_j e^{f_j} }
+$$
+<br>已知输入数据<strong>$x_i$</strong>和权重参数<strong>$W$</strong>，上式可以看做对应类别<strong>$y_i$</strong>的归一化概率。评价函数的输出向量没有归一化，直接当做对数概率的输入，之后用对数概率除以所有概率的和来进行归一化，这样概率的和为1。从概率论角度看，我们再最小化正确分类的负概率（即最大化正确分类的概率），这是最大似然估计（Maximum Likelihood Estimation）。这样损失函数中的正则化部分<strong>$R(W)$</strong>可以看过权重矩阵<strong>$W$</strong>的高斯先验，这样最大似然估计变成了最大后验概率估计（Maximum a posteriori）。</p>
 <p><strong>实践问题：数值稳定</strong>：当写代码实现Softmax函数时，会涉及到<strong>$e^{f_{y_i}}$</strong>和<strong>$\sum_j e^{f_j}$</strong>，因为指数的原因，这些数值可能会非常大。除以很大的数值可能会引起数值不稳定，可以使用归一化的技巧。在分子和分母同时乘以一个常数，分数的数值不变：<br>$$<br>\frac{e^{f_{y_i}}}{\sum_j e^{f_j}}<br>= \frac{Ce^{f_{y_i}}}{C\sum_j e^{f_j}}<br>= \frac{e^{f_{y_i} + \log C}}{\sum_j e^{f_j + \log C}}<br>$$<br><strong>$C$</strong>通常设为<strong>$\log C = -\max x_if_j$</strong>，这样分数向量中最大的值为0。</p>
 <h2 id="SVM_vs-_Softmax">SVM vs. Softmax</h2><p>下面图像可以帮助对比两者区别<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n2_06.jpeg" alt="cs231n2_06.jpeg"></p>
 <p><strong>Softmax分类器计算每类的概率</strong>：SVM计算每类的得分，这样不易直接解释。Softmax计算每类的概率。超参数<strong>$\lambda$</strong>控制概率的集中或离散程度。</p>
 <p><strong>实践中，SVM和Softmax常常是相似的</strong>：SVM和Softmax性能差别不大，不同的人对哪种效果更好持不同的观点。和Softmax相比，SVM更加局部化（local objective），它只关心小于间隔$\Delta$的部分，例如$\Delta = 1$，那么分值[10, -100, -100]和[10, 9, 9]对于SVM来说，其loss函数值相同；但是对于softmax就不同了。Softmax的loss函数只有在完全正确情况下才会为0。</p>
 <h2 id="总结">总结</h2><p>1、定义了评价函数，线性函数的评价函数依赖权重<strong>$W$</strong>和偏置<strong>$b$</strong>。<br>2、和kNN使用不一样，参数化方法训练时间比较久，预测只是矩阵相乘。<br>3、通过一个trick，可以把偏置加入到矩阵相乘中。<br>4、定义了loss 函数，介绍了常用的SVM和Softmax loss。对比了两者的区别。</p>
-<p>如果求解最优的参数，这设计到<em>优化</em>，是下一届讲解的问题。</p>
+<p>如果求解最优的参数，这设计到<em>优化</em>，是下一节讲解的问题。</p>
 <h2 id="拓展阅读">拓展阅读</h2><p><a href="http://arxiv.org/abs/1306.0239" target="_blank" rel="external">Deep Learning using Linear Support Vector Machines</a></p>
 
       
@@ -318,7 +326,7 @@
         <p><span>本文标题:</span><a href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
         <p><span>发布时间:</span>2016年09月04日 - 22时25分</p>
-        <p><span>最后更新:</span>2016年09月09日 - 23时41分</p>
+        <p><span>最后更新:</span>2016年09月15日 - 23时07分</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/" title="cs231n-(2)线性分类器：SVM和Softmax">http://kangbing.github.io/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/</a>
             <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -333,6 +341,12 @@
 
 
     <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">
+                    cs231n-(3)最优化：随机梯度下降
+                </a>
+            </div>
         
         
             <div id="article-nav-older" class="article-nav-title">
@@ -436,7 +450,9 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+            <a href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/" title="上一篇: cs231n-(3)最优化：随机梯度下降">
+                <i class="fa fa-angle-left"></i>
+            </a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
@@ -448,7 +464,7 @@
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
     <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
     <script>
         $(".post-list").addClass("toc-article");

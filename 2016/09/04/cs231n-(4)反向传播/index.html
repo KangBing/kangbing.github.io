@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>cs231n-(4)反向传播 | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="介绍这节介绍反向传播的直观理解。使用链式法则递归求导">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cs231n-(4)反向传播">
+<meta property="og:url" content="http://kangbing.github.io/2016/09/04/cs231n-(4)反向传播/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="介绍这节介绍反向传播的直观理解。使用链式法则递归求导">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n4_01.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n4_02.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n4_03.jpeg">
+<meta property="og:updated_time" content="2016-09-15T15:09:40.617Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cs231n-(4)反向传播">
+<meta name="twitter:description" content="介绍这节介绍反向传播的直观理解。使用链式法则递归求导">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Machine-Learning/" style="font-size: 17.5px;">Machine Learning</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 15px;">cs231n</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 17.5px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 10px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-cs231n-(4)反向传播" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/09/04/cs231n-(4)反向传播/" class="article-date">
+      <time datetime="2016-09-04T14:28:34.000Z" itemprop="datePublished">2016-09-04</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cs231n-(4)反向传播
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backforward/">backforward</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="介绍">介绍</h2><p>这节介绍反向传播的直观理解。使用链式法则递归求导</p>
+<ul>
+<li><a id="more"></a>
+</li>
+</ul>
+<p>函数$f(x)$，其中$x$是输入变量，我们需要计算$x$的导数$\nabla f(x)$。这个函数$f(x)$可以是loss函数，计算loss函数关于权重和偏置$W,b$的导数，依次更新它们。</p>
+<h2 id="简单表达式和解释梯度">简单表达式和解释梯度</h2><p>函数有两个变量$f(x,y)=xy$，可以得到<br>
+$$
+f(x,y) = x y \hspace{0.5in} \rightarrow \hspace{0.5in} \frac{\partial f}{\partial x} = y \hspace{0.5in} \frac{\partial f}{\partial y} = x
+$$
+<br>一个变量的导数，表示它的值变化时对整个表示式影响的大小。</p>
+<p>$\nabla f$表示偏导数向量，$\nabla f = [\frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}] = [y, x]$</p>
+<p>对加法求导：<br>
+$$
+f(x,y) = x + y \hspace{0.5in} \rightarrow \hspace{0.5in} \frac{\partial f}{\partial x} = 1 \hspace{0.5in} \frac{\partial f}{\partial y} = 1
+$$
+</p>
+<p>对max算子求导<br>
+$$
+f(x,y) = \max(x, y) \hspace{0.5in} \rightarrow \hspace{0.5in} \frac{\partial f}{\partial x} = \mathbb{1}(x >= y) \hspace{0.5in} \frac{\partial f}{\partial y} = \mathbb{1}(y >= x)
+$$
+<br>上面变量大的值才对表达式有影响，变量小的值，导数为零。</p>
+<h2 id="使用链式法则计算复合表达式">使用链式法则计算复合表达式</h2><p>以一个稍微复杂一点的计算为例$f(x,y,z) = (x + y)z$，可以把这个函数分为2个$q = x + y$，$f = qz$。先对$q,z$求导得到$\frac{\partial f}{\partial q} = z, \frac{\partial f}{\partial z} = q$，在用$q$对$x,y$求导$\frac{\partial q}{\partial x} = 1, \frac{\partial q}{\partial y} = 1$，根据链式法则$\frac{\partial f}{\partial x} = \frac{\partial f}{\partial q} \frac{\partial q}{\partial x}$</p>
+<p>上面求解过程，可以用下图表示<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n4_01.jpeg" alt="cs231n04_011.jpeg"><br>上图中，绿色表示前向传播，红色表示反向传播。</p>
+<h2 id="反向传播直观理解">反向传播直观理解</h2><p>反向传播是局部处理过程。每个神经单元在得到输入后，可以立即计算两件事1、输出，2、关于输入的局部梯度。神经单元不需要知道整个网络的结构就可以完成这两件事。前向传播完成后，在反向传播时，只需要对路径上的局部梯度相乘就可以得到最终输出对于某个变量的梯度值。</p>
+<p>##模块化：Sigmoid例子<br>任何函数都可以看做一个神经元，可以把多个神经元组成一个，或把一个函数拆分为几个门单元。看下面的表达式<br>
+$$
+f(w,x) = \frac{1}{1+e^{-(w_0x_0 + w_1x_1 + w_2)}}
+$$
+<br>这个函数有多个计算组成，除了上面介绍的加、乘、max，还有四种：<br>
+$$
+f(x) = \frac{1}{x} 
+\hspace{1in} \rightarrow \hspace{1in} 
+\frac{df}{dx} = -1/x^2 
+\\\\
+f_c(x) = c + x
+\hspace{1in} \rightarrow \hspace{1in} 
+\frac{df}{dx} = 1 
+\\\\
+f(x) = e^x
+\hspace{1in} \rightarrow \hspace{1in} 
+\frac{df}{dx} = e^x
+\\\\
+f_a(x) = ax
+\hspace{1in} \rightarrow \hspace{1in} 
+\frac{df}{dx} = a
+$$
+<br>上面的计算过程可以用下图表示<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n4_02.jpeg" alt="cs231n_02.jpeg"><br>其中$w = [2,-3,-3],x = [-1, -2]$</p>
+<p>sigmoid函数是常用的激活函数，对它的求导，计算如下<br>
+$$
+\sigma(x) = \frac{1}{1+e^{-x}} \\\\
+\rightarrow \hspace{0.3in} \frac{d\sigma(x)}{dx} = \frac{e^{-x}}{(1+e^{-x})^2} = \left( \frac{1 + e^{-x} - 1}{1 + e^{-x}} \right) \left( \frac{1}{1+e^{-x}} \right) 
+= \left( 1 - \sigma(x) \right) \sigma(x)
+$$
+<br><strong>实现提示：分段反向传播</strong>。把前向传播分段进行，方便计算导数和反向传播。</p>
+<h2 id="反向传播实践：分段计算">反向传播实践：分段计算</h2><p>有如下函数<br>
+$$
+f(x,y) = \frac{x + \sigma(y)}{\sigma(x) + (x+y)^2}
+$$
+<br>先写代码实现forward<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">x = <span class="number">3</span> <span class="comment"># example values</span></span><br><span class="line">y = -<span class="number">4</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># forward pass</span></span><br><span class="line">sigy = <span class="number">1.0</span> / (<span class="number">1</span> + math.exp(-y)) <span class="comment"># sigmoid in numerator   #(1)</span></span><br><span class="line">num = x + sigy <span class="comment"># numerator                               #(2)</span></span><br><span class="line">sigx = <span class="number">1.0</span> / (<span class="number">1</span> + math.exp(-x)) <span class="comment"># sigmoid in denominator #(3)</span></span><br><span class="line">xpy = x + y                                              <span class="comment">#(4)</span></span><br><span class="line">xpysqr = xpy**<span class="number">2</span>                                          <span class="comment">#(5)</span></span><br><span class="line">den = sigx + xpysqr <span class="comment"># denominator                        #(6)</span></span><br><span class="line">invden = <span class="number">1.0</span> / den                                       <span class="comment">#(7)</span></span><br><span class="line">f = num * invden <span class="comment"># done!                                 #(8)</span></span><br></pre></td></tr></table></figure></p>
+<p>在实现时，创建了一些中间变量<code>sigy, num, sigx, xpy, xpysqr, den, invden</code>，这些都是简单的表达式。在反向传播时，在这些变量前面加上<code>d</code>表示梯度</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># backprop f = num * invden</span></span><br><span class="line">dnum = invden <span class="comment"># gradient on numerator                             #(8)</span></span><br><span class="line">dinvden = num                                                     <span class="comment">#(8)</span></span><br><span class="line"><span class="comment"># backprop invden = 1.0 / den </span></span><br><span class="line">dden = (-<span class="number">1.0</span> / (den**<span class="number">2</span>)) * dinvden                                <span class="comment">#(7)</span></span><br><span class="line"><span class="comment"># backprop den = sigx + xpysqr</span></span><br><span class="line">dsigx = (<span class="number">1</span>) * dden                                                <span class="comment">#(6)</span></span><br><span class="line">dxpysqr = (<span class="number">1</span>) * dden                                              <span class="comment">#(6)</span></span><br><span class="line"><span class="comment"># backprop xpysqr = xpy**2</span></span><br><span class="line">dxpy = (<span class="number">2</span> * xpy) * dxpysqr                                        <span class="comment">#(5)</span></span><br><span class="line"><span class="comment"># backprop xpy = x + y</span></span><br><span class="line">dx = (<span class="number">1</span>) * dxpy                                                   <span class="comment">#(4)</span></span><br><span class="line">dy = (<span class="number">1</span>) * dxpy                                                   <span class="comment">#(4)</span></span><br><span class="line"><span class="comment"># backprop sigx = 1.0 / (1 + math.exp(-x))</span></span><br><span class="line">dx += ((<span class="number">1</span> - sigx) * sigx) * dsigx <span class="comment"># Notice += !! See notes below  #(3)</span></span><br><span class="line"><span class="comment"># backprop num = x + sigy</span></span><br><span class="line">dx += (<span class="number">1</span>) * dnum                                                  <span class="comment">#(2)</span></span><br><span class="line">dsigy = (<span class="number">1</span>) * dnum                                                <span class="comment">#(2)</span></span><br><span class="line"><span class="comment"># backprop sigy = 1.0 / (1 + math.exp(-y))</span></span><br><span class="line">dy += ((<span class="number">1</span> - sigy) * sigy) * dsigy                                 <span class="comment">#(1)</span></span><br><span class="line"><span class="comment"># done! phew</span></span><br></pre></td></tr></table></figure>
+<p>注意：<br>1、对前向传播过程中的变量进行缓存，因为在反向传播时也会用到。<br>2、如果$x,y$在前向传播时，使用了多次；那么在反向传播时要使用<code>+=</code>来代替<code>=</code>。我们要累积梯度，使用<code>=</code>会覆盖掉前面计算好的梯度。</p>
+<h2 id="方向传播流的模式">方向传播流的模式</h2><p>反向传播中的梯度可以直观的解释一下。神经网络中最常用的三个门单元为$add,mul,max$，可以直观的看一下它们三个在反向传播中，对梯度的影响。<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n4_03.jpeg" alt="cs231n4_03.jpeg"><br>add：加法是把梯度不变的分到下一个门单元。<br>max:max算子是把梯度分到值比较大的一个单元。<br>mul:乘法是把梯度乘以一个值传到下一个门单元。$f=xy$，那么传到$x$的梯度要乘以$y$，同理$y$的梯度。</p>
+<p>注意，权重和数据的乘积$w^Tx_i$，如果有某个权重很大，那么某个维度的输入数据梯度会很大，这样这个维度的数据对结果有很大影响。因此要正则化权重，限制梯度幅度。</p>
+<h2 id="向量化梯度操作">向量化梯度操作</h2><p>上面的例子都是单个变量的，神经网络中的运算都是以矩阵或向量为单位的。求梯度以及梯度反向传播，都可以用矩阵或向量乘法。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># forward pass</span></span><br><span class="line">W = np.random.randn(<span class="number">5</span>, <span class="number">10</span>)</span><br><span class="line">X = np.random.randn(<span class="number">10</span>, <span class="number">3</span>)</span><br><span class="line">D = W.dot(X)</span><br><span class="line"></span><br><span class="line"><span class="comment"># now suppose we had the gradient on D from above in the circuit</span></span><br><span class="line">dD = np.random.randn(*D.shape) <span class="comment"># same shape as D</span></span><br><span class="line">dW = dD.dot(X.T) <span class="comment">#.T gives the transpose of the matrix</span></span><br><span class="line">dX = W.T.dot(dD)</span><br></pre></td></tr></table></figure></p>
+<p>注意，在分析梯度是，不用记住它的表达式，因为可以通过维度推导出来。<code>dW</code>维度和<code>W</code>维度大小一样，它等于<code>dD</code>和<code>X</code>的乘积。</p>
+<h2 id="总结">总结</h2><p>1、对梯度有了直观理解，知道梯度如何在网络中传播，如何影响输出。<br>2、对梯度计算时，使用分段计算。把函数分为更小的模块，可以更好地计算梯度，使用链式法则得到最终梯度。</p>
+<h2 id="参考">参考</h2><p><a href="http://arxiv.org/abs/1502.05767" target="_blank" rel="external">Automatic differentiation in machine learning: a survey</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2016年09月04日 - 22时28分</p>
+        <p><span>最后更新:</span>2016年09月15日 - 23时09分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/09/04/cs231n-(4)反向传播/" title="cs231n-(4)反向传播">http://kangbing.github.io/2016/09/04/cs231n-(4)反向传播/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2016/09/04/cs231n-(4)反向传播/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">
+                    cs231n-(5)神经网络-1：建立架构
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">
+                    cs231n-(3)最优化：随机梯度下降
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#简单表达式和解释梯度"><span class="toc-number">2.</span> <span class="toc-text">简单表达式和解释梯度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用链式法则计算复合表达式"><span class="toc-number">3.</span> <span class="toc-text">使用链式法则计算复合表达式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#反向传播直观理解"><span class="toc-number">4.</span> <span class="toc-text">反向传播直观理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#反向传播实践：分段计算"><span class="toc-number">5.</span> <span class="toc-text">反向传播实践：分段计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方向传播流的模式"><span class="toc-number">6.</span> <span class="toc-text">方向传播流的模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#向量化梯度操作"><span class="toc-number">7.</span> <span class="toc-text">向量化梯度操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">9.</span> <span class="toc-text">参考</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="2016/09/04/cs231n-(4)反向传播/" data-title="cs231n-(4)反向传播" data-url="http://kangbing.github.io/2016/09/04/cs231n-(4)反向传播/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kangbing"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/" title="上一篇: cs231n-(5)神经网络-1：建立架构">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/" title="下一篇: cs231n-(3)最优化：随机梯度下降">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2016 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

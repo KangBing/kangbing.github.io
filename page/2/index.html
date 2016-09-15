@@ -132,7 +132,7 @@
                         
                             <li><a href="/archives/">所有文章</a></li>
                         
-                            <li><a href="/tags/">标签云</a></li>
+                            <li><a href="/tags/">分类和标签</a></li>
                         
                             <li><a href="/about/">关于我</a></li>
                         
@@ -154,7 +154,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/DeepLearning-kNN-cs231n/" style="font-size: 10px;">DeepLearning,kNN,cs231n</a> <a href="/tags/DeepLearning-softmax-cs231n/" style="font-size: 10px;">DeepLearning,softmax,cs231n</a> <a href="/tags/google/" style="font-size: 10px;">google</a> <a href="/tags/机器学习-Machine-Learning/" style="font-size: 20px;">机器学习, Machine Learning</a>
+                        <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Machine-Learning/" style="font-size: 17.5px;">Machine Learning</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 15px;">cs231n</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 17.5px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 10px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
                     </div>
                 </section>
                 
@@ -211,7 +211,7 @@
                 
                     <li><a href="/archives/">所有文章</a></li>
                 
-                    <li><a href="/tags/">标签云</a></li>
+                    <li><a href="/tags/">分类和标签</a></li>
                 
                     <li><a href="/about/">关于我</a></li>
                 
@@ -234,11 +234,11 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-机器学习(4)-正则化" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-cs231n-(4)反向传播" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/03/07/机器学习(4)-正则化/" class="article-date">
-      <time datetime="2016-03-07T15:12:53.000Z" itemprop="datePublished">2016-03-07</time>
+      <a href="/2016/09/04/cs231n-(4)反向传播/" class="article-date">
+      <time datetime="2016-09-04T14:28:34.000Z" itemprop="datePublished">2016-09-04</time>
 </a>
     </div>
   
@@ -251,7 +251,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a>
+      <a class="article-title" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a>
     </h1>
   
 
@@ -261,7 +261,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="过拟合">过拟合</h2><p>通过机器学习，得到的模型可以非常好的适应训练集，代价函数loss值接近0，在训练集上的准确率接近100%。但是如果扩展到训练集意外的数据，准确率有下降很多。这就是产生了过拟合现象。</p>
+              <h2 id="介绍">介绍</h2><p>这节介绍反向传播的直观理解。使用链式法则递归求导</p>
 <ul>
 <li>
           
@@ -271,15 +271,19 @@
     <div class="article-info article-info-index">
       
       
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习-Machine-Learning/">机器学习, Machine Learning</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backforward/">backforward</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a  href="/2016/03/07/机器学习(4)-正则化/#more">more >></a>
+          <a  href="/2016/09/04/cs231n-(4)反向传播/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -297,11 +301,11 @@
 
 
   
-    <article id="post-机器学习(3)-逻辑回归" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-cs231n-(3)最优化：随机梯度下降" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/03/06/机器学习(3)-逻辑回归/" class="article-date">
-      <time datetime="2016-03-06T15:10:53.000Z" itemprop="datePublished">2016-03-06</time>
+      <a href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/" class="article-date">
+      <time datetime="2016-09-04T14:27:13.000Z" itemprop="datePublished">2016-09-04</time>
 </a>
     </div>
   
@@ -314,7 +318,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a>
+      <a class="article-title" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a>
     </h1>
   
 
@@ -324,7 +328,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="逻辑回归（Logistics_Regression）">逻辑回归（Logistics Regression）</h2><p>逻辑回归和线性回归类似。在现实回归中，函数$h_\theta(x)$是个线性函数。输入$x$和输出是线性关系，如果$x$很大或很小，那么输出范围难以控制。逻辑回归可以解决这个问题。逻辑回归把输出限定在了一个范围内，常常用于分类问题中。</p>
+              <h2 id="介绍">介绍</h2><p>上节介绍了图像分类中两个重要的组成部分：<br>1、评价函数score function<br>2、损失函数loss function</p>
 <ul>
 <li>
           
@@ -334,15 +338,19 @@
     <div class="article-info article-info-index">
       
       
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习-Machine-Learning/">机器学习, Machine Learning</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SGD/">SGD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a  href="/2016/03/06/机器学习(3)-逻辑回归/#more">more >></a>
+          <a  href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -360,11 +368,11 @@
 
 
   
-    <article id="post-机器学习(2)-线性回归" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-cs231n-(2)线性分类器：SVM和Softmax" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/02/29/机器学习(2)-线性回归/" class="article-date">
-      <time datetime="2016-02-29T15:26:14.000Z" itemprop="datePublished">2016-02-29</time>
+      <a href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/" class="article-date">
+      <time datetime="2016-09-04T14:25:55.000Z" itemprop="datePublished">2016-09-04</time>
 </a>
     </div>
   
@@ -377,7 +385,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a>
+      <a class="article-title" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a>
     </h1>
   
 
@@ -387,7 +395,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="概念">概念</h2><p>回归（Regression）是指确定自变量和因变量之间的相互关系。线性回归（Linear Regression）是指自变量和因变量之间的关系是线性的。</p>
+              <p><strong>概述</strong><br>上节讲到了图像分类以及kNN算法，kNN用作图像分类效果并不好。效果更好的分类算法是神经网络和卷积神经网络，它主要包括2部分<br>1、评分函数score function，把原数据映射为一个得分。<br>2、损失函数loss function，衡量预测得分和真实标签之间的差距。<br>最终的优化问题是最小化损失函数。</p>
 <ul>
 <li>
           
@@ -397,15 +405,19 @@
     <div class="article-info article-info-index">
       
       
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习-Machine-Learning/">机器学习, Machine Learning</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/softmax/">softmax</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a  href="/2016/02/29/机器学习(2)-线性回归/#more">more >></a>
+          <a  href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -423,11 +435,11 @@
 
 
   
-    <article id="post-机器学习(1)-概念" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-cs231n-(1)图像分类和kNN" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/02/27/机器学习(1)-概念/" class="article-date">
-      <time datetime="2016-02-27T02:11:21.000Z" itemprop="datePublished">2016-02-27</time>
+      <a href="/2016/09/04/cs231n-(1)图像分类和kNN/" class="article-date">
+      <time datetime="2016-09-04T14:24:50.000Z" itemprop="datePublished">2016-09-04</time>
 </a>
     </div>
   
@@ -440,7 +452,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a>
+      <a class="article-title" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a>
     </h1>
   
 
@@ -450,7 +462,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>最近想系统看一下机器学习，在这里记录一下。<br>最近一则新闻很吸引眼球：<a href="http://toutiao.com/i6244491214461075969/">Nature重磅封面：谷歌人工智能击败欧洲围棋冠军，3月将与李世乭对弈</a>，新闻中提高的AlphaGo就是通过机器学习而来的。机器学习其实并不神秘。</p>
+              <h2 id="简介">简介</h2><p>介绍图像分类和kNN算法。</p>
 <ul>
 <li>
           
@@ -460,15 +472,19 @@
     <div class="article-info article-info-index">
       
       
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习-Machine-Learning/">机器学习, Machine Learning</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kNN/">kNN</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a  href="/2016/02/27/机器学习(1)-概念/#more">more >></a>
+          <a  href="/2016/09/04/cs231n-(1)图像分类和kNN/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -486,11 +502,11 @@
 
 
   
-    <article id="post-Google-Logging-Library-glog-使用" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-机器学习(7)-神经网络预测练习" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/01/18/Google-Logging-Library-glog-使用/" class="article-date">
-      <time datetime="2016-01-18T10:25:07.000Z" itemprop="datePublished">2016-01-18</time>
+      <a href="/2016/03/21/机器学习(7)-神经网络预测练习/" class="article-date">
+      <time datetime="2016-03-21T14:59:10.000Z" itemprop="datePublished">2016-03-21</time>
 </a>
     </div>
   
@@ -503,7 +519,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a>
+      <a class="article-title" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a>
     </h1>
   
 
@@ -513,7 +529,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="简介">简介</h2><p>Google Logging Library简称glog，它是基于C++风格的开源日志库，可以像操作流一样输出日志，且定义了各种宏定义了辅助操作。可以通过日志级别来输出日志、通过命令行控制日志、打印条件日志，也可以像断言一样检查条件，不满足条件时终止程序。</p>
+              <p>使用前向传播，预测已有的神经网络。</p>
 <ul>
 <li>
           
@@ -523,11 +539,19 @@
     <div class="article-info article-info-index">
       
       
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/斯坦福CS229/">斯坦福CS229</a>
+    </div>
+
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
-          <a  href="/2016/01/18/Google-Logging-Library-glog-使用/#more">more >></a>
+          <a  href="/2016/03/21/机器学习(7)-神经网络预测练习/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -547,7 +571,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 </div>
