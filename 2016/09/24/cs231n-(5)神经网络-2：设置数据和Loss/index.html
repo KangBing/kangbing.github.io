@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>cs231n-(5)神经网络-2：设置数据和Loss | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="数据预处理，权重如何初始化，正则化方法，损失函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cs231n-(5)神经网络-2：设置数据和Loss">
+<meta property="og:url" content="http://kangbing.github.io/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="数据预处理，权重如何初始化，正则化方法，损失函数">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n6_01.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n6_02.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n6_03.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n6_04.jpeg">
+<meta property="og:updated_time" content="2017-04-12T14:39:24.081Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cs231n-(5)神经网络-2：设置数据和Loss">
+<meta name="twitter:description" content="数据预处理，权重如何初始化，正则化方法，损失函数">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/BatchNorm/" style="font-size: 10px;">BatchNorm</a> <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Depthwise/" style="font-size: 10px;">Depthwise</a> <a href="/tags/Ensembles/" style="font-size: 10px;">Ensembles</a> <a href="/tags/Inception/" style="font-size: 12.5px;">Inception</a> <a href="/tags/Inception-V3/" style="font-size: 10px;">Inception-V3</a> <a href="/tags/Inception-V4/" style="font-size: 10px;">Inception-V4</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/ParameterServer/" style="font-size: 10px;">ParameterServer</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/R-CNN/" style="font-size: 10px;">R-CNN</a> <a href="/tags/Residual/" style="font-size: 12.5px;">Residual</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/SPP-net/" style="font-size: 10px;">SPP-net</a> <a href="/tags/Xavier/" style="font-size: 10px;">Xavier</a> <a href="/tags/Xception/" style="font-size: 10px;">Xception</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 17.5px;">cs231n</a> <a href="/tags/feature/" style="font-size: 10px;">feature</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 15px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-cs231n-(5)神经网络-2：设置数据和Loss" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/" class="article-date">
+      <time datetime="2016-09-24T06:56:53.000Z" itemprop="datePublished">2016-09-24</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cs231n-(5)神经网络-2：设置数据和Loss
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/神经网络/">神经网络</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>数据预处理，权重如何初始化，正则化方法，损失函数</p>
+<ul>
+<li><a id="more"></a>
+</li>
+</ul>
+<h2 id="数据预处理">数据预处理</h2><p>神经网络输入的数据往往要经过预处理。假设数据<code>X</code>大小为[N x D]，其中<code>N</code>表示元素个数，<code>D</code>表示维度。</p>
+<h3 id="减去均值">减去均值</h3><p>最长用的就是减去每个特征的均值（均值常常有训练集计算得到），减去均值的几何意义是将数据中心大致移到零点。。使用<code>python</code>时，可以用<code>X-=np.mean(X,  axis = 0)</code>算得均值。如果是图像，常常减去RGB通道的均值。</p>
+<h3 id="正则化">正则化</h3><p>正则化是指将数据各个维度归一化，即变化范围相同。一般有两种方法：1、将数据均值设为零（如减去均值），之后除以标准差：<code>X /= np.std(X, axis=0)</code>。2、不同维度的数据范围相差很大，且重要性相同，将其最大值和最小值分别变换为+1和-1。</p>
+<p>下去就是原始数据，零中心化，正则化处理的效果。<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n6_01.jpeg" alt="cs231n6_01.jpeg"></p>
+<h3 id="PCA_and_Whitening">PCA and Whitening</h3><p>PCA是用来降维，假设已经完成了零中心化和归一化，降维过程如下：<br>先计算协方差矩阵<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Assume input data matrix X of size [N x D]</span></span><br><span class="line">X -= np.mean(X, axis = <span class="number">0</span>) <span class="comment"># zero-center the data (important)</span></span><br><span class="line">cov = np.dot(X.T, X) / X.shape[<span class="number">0</span>] <span class="comment"># get the data covariance matrix</span></span><br></pre></td></tr></table></figure></p>
+<p>协方差矩阵中(i,j)位的数据表示i维度和j维度数据的协方差；对角线上数据表示某一维度的方差。协方差矩阵是对称的<a href="https://en.wikipedia.org/wiki/Positive-definite_matrix#Negative-definite.2C_semidefinite_and_indefinite_matrices" target="_blank" rel="external">半正定矩阵</a>，对它进行SVD分解：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">U,S,V = np.linalg.svd(cov)</span><br></pre></td></tr></table></figure>
+<p>得到<code>U</code>是特征向量矩阵，它的每一列都是一个特征向量，<code>S</code>是特征值向量，因为协方差矩阵是对称的半正定矩阵，所以它等于特征值平方。为了去除相关性，将已经中心化的数据映射到特征向量上</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Xrot = np.dot(X, U) <span class="comment"># decorrelate the data</span></span><br></pre></td></tr></table></figure>
+<p>其中<code>U</code>的每一列都是标准正交特征向量，且已经按照特征值由大到小排列（<code>np.linalg.svg</code>返回时已经排列）。与特征向量相乘，相当于对X的数据做一个旋转映射，映射到特征向量对应的正交基上。可以只保留前面较大特征值对应的特征向量，丢弃较小值对应的特征向量，以此来降维。这种方法叫做<a href="https://en.wikipedia.org/wiki/Principal_component_analysis" target="_blank" rel="external">Principal component analysis</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Xrot_reduced = np.dot(X, U[:,:<span class="number">100</span>]) <span class="comment"># Xrot_reduced becomes [N x 100]</span></span><br></pre></td></tr></table></figure>
+<p>通过这个操作，保留了前100维度数据（以方差大小为标准）。</p>
+<p>经过PCA处理的数据，可以再经过<strong>白化Whitening</strong>处理。白化是指PCA处理后的数据，每个维度除以其特征值。几何解释就是服从多维度高斯分布的数据，经过白化处理后，服从均值为零，协方差相等的分布。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># whiten the data:</span></span><br><span class="line"><span class="comment"># divide by the eigenvalues (which are square roots of the singular values)</span></span><br><span class="line">Xwhite = Xrot / np.sqrt(S + <span class="number">1e-5</span>)</span><br></pre></td></tr></table></figure></p>
+<p>上面处理为白化操作，分母加上<code>1e-5</code>为防止分母为零。这样的操作把所有维度数据拉伸到相同范围，可能会放大噪声，实际中可以通过增大分母（加上比<code>1e-5</code>更大的值）来平滑。<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n6_02.jpeg" alt="cs231n6_02.jpeg"></p>
+<p>上图左边分布为原始数据。中间为PAC处理后的数据，可以看出PCA处理后，将坐标轴旋转，可以看出横轴信息量大，如果只保留一维数据，要丢弃纵轴数据。右边为白化处理后的数据，数据范围相同了</p>
+<p>使用CIFAR-10来展示PCA和白化<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n6_03.jpeg" alt="cs231n6_03.jpeg"><br>上图中，最左边为原始数据，每张图片可以看做是3072的列向量。第二张为特征向量中，前144个（按照特征值排列）。第三张为经过PAC降维处理后，只保留144维特征的图片；图片变模糊了，说明只保留了低频部分。最后一张为白化后的图片。</p>
+<p>注意：CNN不需要进行PCA和白化操作，这里提到只是讲解数据处理的一般方法。<br>数据预处理，只能在训练集上应用。应该先将数据分为训练集、验证集、测试集，之后在训练集上应用数据预处理。</p>
+<h2 id="权重初始化">权重初始化</h2><p>训练神经网络前，要先初始化权重。</p>
+<h3 id="全部初始化为零">全部初始化为零</h3><p>权重最终的值我们不知道，但是根据前面数据预处理过程，大概可以猜到，权重最终应该是一般为正，一般为负。但是权重不能全部初始化为零。如果全部初始化为零，那么所有神经元输出将相同，计算得到所有梯度都相同，权重更新相同，最终得到的权重也相同。</p>
+<h3 id="小的随机数">小的随机数</h3><p>因为正则化，权重要比较小，但是又不能对称；那么可以用小的随机数来初始化。这样计算得到不同梯度，迭代更新权重会趋向不同。例如这样初始化。<code>W = 0.01 * np.random.randn(D, H)</code>，<code>randn</code>是生成零均值单位方差的高斯分布。这样初始化，每个神经权重向量是从高维高斯分布随机采样而来；也可是使用随机生成的随机数。但是在实际中，这样初始化效果不好。</p>
+<p>小的权重并不一定会得到好的效果。神经网络中，如果权重比较小，那么反向传播时，梯度就比较小。这样会减小梯度传播的信号，在深度神经网络中也是个问题。</p>
+<h3 id="校准方差">校准方差</h3><p>如果神经元输出有着相似的分布，那么收敛速度回加快。前面提到的权重初始化方法，随着输入增大，输出的方差会增大。通过除以<code>sqrt(n)</code>，其中<code>n</code>是输入个数，可以将输出方差归一化到1；例如这样初始化<code>w = np.random.randn(n) / sqrt(n)</code>。</p>
+<p>不考虑非线性激活函数，假设输出$s = \sum_i^n w_i x_i$，那么计算输出方差和输入关系如下：</p>
+
+$$
+% <!--[CDATA[
+\begin{align}
+\text{Var}(s) &= \text{Var}(\sum_i^n w_ix_i) \\\\
+&= \sum_i^n \text{Var}(w_ix_i) \\\\
+&= \sum_i^n [E(w_i)]^2\text{Var}(x_i) + E[(x_i)]^2\text{Var}(w_i) + \text{Var}(x_i)\text{Var}(w_i) \\\\
+&= \sum_i^n \text{Var}(x_i)\text{Var}(w_i) \\\\
+&= \left( n \text{Var}(w) \right) \text{Var}(x)
+\end{align} %]]-->
+$$
+
+<p>上面第三步中，用到了假设$E[x_i] = E[w_i] = 0$（注意，有些并不等于零，例如ReLU），最后一步假设了$x,w$服从相同分布。如果想要输出和$x$有相同的方差，那么$n \text{Var}(w)$必须为1，所以得到上面初始化方式<code>w = np.random.randn(n) / sqrt(n)</code>。</p>
+<p>论文<a href="http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf" target="_blank" rel="external">Understanding the difficulty of training deep feedforward neural networks</a>推荐初始化方式为$\text{Var}(w) = 2/(n_{in} + n_{out})$，其中$n<em>{in} ,n</em>{out}$分布表示前一层和后一层网络中单元个数。论文<a href="http://arxiv-web3.library.cornell.edu/abs/1502.01852" target="_blank" rel="external"> Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification </a>提出，针对ReLU初始化，网络中神经元方差为$2.0/n$，这样初始化变为<code>w = np.random.randn(n) * sqrt(2.0/n)</code>；在实践中使用ReLU时，推荐这样初始化。。</p>
+<h3 id="稀疏初始化">稀疏初始化</h3><p>首先将所有权重初始化为零，但是为了避免对称，随机在层之间连接个别神经全，权重初始化可以使用小的高斯分布，连接个数常常设置为10.</p>
+<h3 id="实际应用">实际应用</h3><p>目录，使用ReLU激活函数的，建议初始化为<code>w = np.random.randn(n) * sqrt(2.0/n)</code>，参考<a href="http://arxiv-web3.library.cornell.edu/abs/1502.01852" target="_blank" rel="external">He et al</a></p>
+<h3 id="批归一化_Batch_Normalization">批归一化 Batch Normalization</h3><p>这是个最近出现的技术，参考<a href="http://arxiv.org/abs/1502.03167" target="_blank" rel="external">论文</a>。它在一定程度上减轻了如何初始化网络权重的问题。具体做法为让数据在输入激活函数前先通过一个网络，通过这个网络之后，输出数据（即输入激活函数的数据）服从标准高斯分布。因为归一化是一个可以简单的求导操作，因此方案可行。实际应用中，常常在全连接层（卷积层）和激活函数(非线性操作）之间插入一个BatchNormalization层。批归一化可以理解为在网络每一层之前都做了预处理。</p>
+<h2 id="正则化-1">正则化</h2><p>正则化用来阻止网络过拟合，有以下几种方法：</p>
+<h3 id="L2_regularization">L2 regularization</h3><p>L2正则化是最常用的方法；它可以直接惩罚目标函数中任何一个权重平方的幅度。具体实现时对于每一个权重$w$在目标函数都加上一项$\frac{1}{2}\lambda w^2$，其中$\lambda$常常等于$\frac{1}{2}$，这样方便求导运算。L2正则化可以直观理解为，它限制单个较大的权重，在权重和不变时，它把权重大概均匀分不到每个权重上。使用L2正则化后，在反向传播梯度更新时，权重会以<code>W+=-lambda * W</code>速度向0靠近。</p>
+<h3 id="L1_regularization">L1 regularization</h3><p>L1正则化也是常用的一种方法，在目标函数中，它给每个权重加上一项$\lambda |w|$。可以把L1和L2正则化结合起来$\lambda_1|w| + \lambda_2 w^2$（叫做<a href="http://web.stanford.edu/~hastie/Papers/B67.2%20%282005%29%20301-320%20Zou%20&amp;%20Hastie.pdf" target="_blank" rel="external">Elastic net regularization</a>）。L1正则化会使权重矩阵变得稀疏（非常接近0）；经过L1正则化后，使用时，用的就是输入的子集了（某些权重系数接近0，对应输入会变为0）。而L2正则化后，权重会变为大小分布均匀且都接近0的数。使用中，如果没有显示去选择特征，那么L2正则化效果一般优于L1正则化。</p>
+<h3 id="Max_norm_constraints">Max norm constraints</h3><p>Max norm正则化限制梯度幅度最大值，并使用投影梯度来确保限制。使用中，参数更新方式不变，只需要检查更新后满足$||\overrightarrow{w}||_2 &lt; c$，不满足则消减梯度。$c$常常设置为3或4。使用这个约束后，网络就不会“爆炸”，因为它限制了权重大小。</p>
+<h3 id="Dropout">Dropout</h3><p>Drop是非常简单高效的正则化方法，在论文<a href="http://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf" target="_blank" rel="external">Dropout: A Simple Way to Prevent Neural Networks from Overfitting </a>中介绍，可以作为上面正则化方法的补充。它的思想为在训练时，让神经元以概率$p$激活（或者设置为零，不激活）。</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n6_04.jpeg" alt="cs231n6_04.jpeg"><br>例如上面图片中，左边是没有使用Dropout的网络，右边是使用了Dropout的网络。需要注意，Dropout只是在训练的时候使用，在测试时，不使用。</p>
+<p>3层网络Dropout代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">""" Vanilla Dropout: Not recommended implementation (see notes below) """</span></span><br><span class="line"></span><br><span class="line">p = <span class="number">0.5</span> <span class="comment"># probability of keeping a unit active. higher = less dropout</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train_step</span><span class="params">(X)</span>:</span></span><br><span class="line">  <span class="string">""" X contains the data """</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># forward pass for example 3-layer neural network</span></span><br><span class="line">  H1 = np.maximum(<span class="number">0</span>, np.dot(W1, X) + b1)</span><br><span class="line">  U1 = np.random.rand(*H1.shape) &lt; p <span class="comment"># first dropout mask</span></span><br><span class="line">  H1 *= U1 <span class="comment"># drop!</span></span><br><span class="line">  H2 = np.maximum(<span class="number">0</span>, np.dot(W2, H1) + b2)</span><br><span class="line">  U2 = np.random.rand(*H2.shape) &lt; p <span class="comment"># second dropout mask</span></span><br><span class="line">  H2 *= U2 <span class="comment"># drop!</span></span><br><span class="line">  out = np.dot(W3, H2) + b3</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># backward pass: compute gradients... (not shown)</span></span><br><span class="line">  <span class="comment"># perform parameter update... (not shown)</span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict</span><span class="params">(X)</span>:</span></span><br><span class="line">  <span class="comment"># ensembled forward pass</span></span><br><span class="line">  H1 = np.maximum(<span class="number">0</span>, np.dot(W1, X) + b1) * p <span class="comment"># <span class="doctag">NOTE:</span> scale the activations</span></span><br><span class="line">  H2 = np.maximum(<span class="number">0</span>, np.dot(W2, H1) + b2) * p <span class="comment"># <span class="doctag">NOTE:</span> scale the activations</span></span><br><span class="line">  out = np.dot(W3, H2) + b3</span><br></pre></td></tr></table></figure></p>
+<p>在训练时使用了Dropout，在预测没有使用Dropout。在使用DropOut时，以概率$p$来激活神经元，那么一层网络的输出会变为原来的$p$倍；在预测是不使用DropOut，为了使得每一层输出值和训练时一致，在每一层计算后也要乘以概率$p$。</p>
+<p>因为我们更加关心测试时的性能，在预测时增加计算会减低生产环境性能；一个解决的方法为在训练时，把使用DropOut的层除以概率$p$，这个方法叫做Inverted dropout。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">""" </span><br><span class="line">Inverted Dropout: Recommended implementation example.</span><br><span class="line">We drop and scale at train time and don't do anything at test time.</span><br><span class="line">"""</span></span><br><span class="line"></span><br><span class="line">p = <span class="number">0.5</span> <span class="comment"># probability of keeping a unit active. higher = less dropout</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train_step</span><span class="params">(X)</span>:</span></span><br><span class="line">  <span class="comment"># forward pass for example 3-layer neural network</span></span><br><span class="line">  H1 = np.maximum(<span class="number">0</span>, np.dot(W1, X) + b1)</span><br><span class="line">  U1 = (np.random.rand(*H1.shape) &lt; p) / p <span class="comment"># first dropout mask. Notice /p!</span></span><br><span class="line">  H1 *= U1 <span class="comment"># drop!</span></span><br><span class="line">  H2 = np.maximum(<span class="number">0</span>, np.dot(W2, H1) + b2)</span><br><span class="line">  U2 = (np.random.rand(*H2.shape) &lt; p) / p <span class="comment"># second dropout mask. Notice /p!</span></span><br><span class="line">  H2 *= U2 <span class="comment"># drop!</span></span><br><span class="line">  out = np.dot(W3, H2) + b3</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># backward pass: compute gradients... (not shown)</span></span><br><span class="line">  <span class="comment"># perform parameter update... (not shown)</span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict</span><span class="params">(X)</span>:</span></span><br><span class="line">  <span class="comment"># ensembled forward pass</span></span><br><span class="line">  H1 = np.maximum(<span class="number">0</span>, np.dot(W1, X) + b1) <span class="comment"># no scaling necessary</span></span><br><span class="line">  H2 = np.maximum(<span class="number">0</span>, np.dot(W2, H1) + b2)</span><br><span class="line">  out = np.dot(W3, H2) + b3</span><br></pre></td></tr></table></figure>
+<p>更多内容可以参考<br><a href="http://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf" target="_blank" rel="external">Dropout paper</a> by Srivastava et al. 2014.<br><a href="http://papers.nips.cc/paper/4882-dropout-training-as-adaptive-regularization.pdf" target="_blank" rel="external">Dropout Training as Adaptive Regularization:</a> “we show that the dropout regularizer is first-order equivalent to an L2 regularizer applied after scaling the features by an estimate of the inverse diagonal Fisher information matrix”</p>
+<h3 id="Theme_of_noise_in_forward_pass">Theme of noise in forward pass</h3><p>DropOut是在前向传播时引入一些随机行为，在预测时通过数值方法补偿这个随机行为。这样类似的方法还有<a href="http://cs.nyu.edu/~wanli/dropc/" target="_blank" rel="external">DropConnect</a>。</p>
+<h3 id="Bias_regularization">Bias regularization</h3><p>偏置不直接和输入数据相乘，它并不直接影响某一维度的数据，因此常常不用对偏置正则化。实际应用中，数据合理预处理后，对偏置正则化也很少导致算法性能变差；可能是因为权重系数远远多于偏置。</p>
+<h3 id="Per-layer_regularization-">Per-layer regularization.</h3><p>不同的层使用不同的正则化方法。很少见。</p>
+<h3 id="实践">实践</h3><p>1、全局使用L2正则化，$\lambda$大小通过交叉验证获得。<br>2、使用L2正则化后，常常再结合Dropout，一般可以设置$p=0.5$，也可以通过交叉验证获得。</p>
+<h2 id="损失函数">损失函数</h2><p>这里来讨论损失函数中的数据损失部分，在监督学习中常常用到，用来衡量预测值和真实值的差异程度。损失函数是输入数据的平均$L=\sum\frac{1}{N}_i L_i$，其中$N$是训练集大小。实际常常常常遇到以下几类问题</p>
+<h3 id="分类问题">分类问题</h3><p>这里假设每个样本都只有一个标签，最常用的两个损失函数为：</p>
+
+$$
+L_i = \sum_{j\neq y_i} \max(0, f_j - f_{y_i} + 1)
+$$
+
+
+$$
+L_i = -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right)
+$$
+
+<p>第一个是SVM分类中用到的，第二个时Softmax分类器用到的交叉熵loss。</p>
+<h3 id="Problem:_Large_number_of_classes-">Problem: Large number of classes.</h3><p>当标签集合特别大时（例如单词字典等），要使用<a href="http://arxiv.org/pdf/1310.4546.pdf" target="_blank" rel="external">Hierarchical Softmax</a>。其思想为，把标签构建为一棵树，每个标签为树的一条路径，在树的每个结点训练Softmax分类器。树的结构要依具体问题而定。</p>
+<h3 id="Attribute_classification">Attribute classification</h3><p>如果一个样本的标签不止一个时，例如标签$y_i$是一个二值向量，可能包含标签集合中的某几个标签，且标签不互斥。这时可以为每个标签建立一个二值分类器:</p>
+
+$$
+L_i = \sum_j \max(0, 1 - y_{ij} f_j)
+$$
+
+<p>$j$表示lable数量，$y<em>{ij}$表示第$i$个样本是否包含第$j$个标签，如果包含$y</em>{ij}$为+1，否则为-1；$f_i$表示预测值，正确预测时其值为正，否则为负。可以计算，当正确预测且分值小于1，或错误预测分值大于-1时，loss就会大于零。</p>
+<p>还有一个方法，就是对每个标签训练一个分类器，那么loss函数为</p>
+
+$$
+L_i = \sum_j y_{ij} \log(\sigma(f_j)) + (1 - y_{ij}) \log(1 - \sigma(f_j))
+$$
+
+<p>这里$y_{ij}$是1（表示包含标签j）或0（不包含标签j）。</p>
+<h3 id="回归">回归</h3><p>对于预测连续值，回归问题的loss函数有L2正则化和L1正则化形式，分别为</p>
+
+$$
+L_i = \Vert f - y_i \Vert_2^2
+$$
+
+
+$$
+L_i = \Vert f - y_i \Vert_1 = \sum_j \mid f_j - (y_i)_j \mid
+$$
+
+<h3 id="注意">注意</h3><p>1、与更加稳定的loss（例如Softmax）,L2 loss更加难以优化。L2 loss要求每个输入都要输出正确值；而Softmax的评分并不重要，只有当评分在适当量级时才有意义。<br>2、L2 Norm的鲁棒性并不好，异常值可能引起很大的梯度。<br>3、面对回归问题时，优先想想能不能转换为分类问题。<br>4、如果使用回归，L2是一个不错的选择。但是在dorpout网络结构中，不宜再用L2。</p>
+<h3 id="Structured_prediction">Structured prediction</h3><p>结构化预测是指标签是任意的形状（树，图等），通常假设结构空间非常大且难以遍历。其思想和结构化SVM类似，在正确分类和分值最高的错误分类间建立一个分类面。</p>
+<h2 id="总结">总结</h2><p>1、数据预处理：零中心化，正则化把特征范围缩放为[-1,1]。<br>2、初始化权重方法，通过使用高斯分布，标准差为$\sqrt{2/n}$。<br>3、正则化L2,L1,Dropout。<br>4、BachNorm。<br>5、Loss函数</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2016年09月24日 - 14时56分</p>
+        <p><span>最后更新:</span>2017年04月12日 - 22时39分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/" title="cs231n-(5)神经网络-2：设置数据和Loss">http://kangbing.github.io/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">
+                    cs231n-(5)神经网络-3：学习和评估
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/09/06/《Deep Learning》(4)-数值计算/">
+                    《Deep Learning》(4)-数值计算
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数据预处理"><span class="toc-number">1.</span> <span class="toc-text">数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#减去均值"><span class="toc-number">1.1.</span> <span class="toc-text">减去均值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正则化"><span class="toc-number">1.2.</span> <span class="toc-text">正则化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PCA_and_Whitening"><span class="toc-number">1.3.</span> <span class="toc-text">PCA and Whitening</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#权重初始化"><span class="toc-number">2.</span> <span class="toc-text">权重初始化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#全部初始化为零"><span class="toc-number">2.1.</span> <span class="toc-text">全部初始化为零</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小的随机数"><span class="toc-number">2.2.</span> <span class="toc-text">小的随机数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#校准方差"><span class="toc-number">2.3.</span> <span class="toc-text">校准方差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#稀疏初始化"><span class="toc-number">2.4.</span> <span class="toc-text">稀疏初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实际应用"><span class="toc-number">2.5.</span> <span class="toc-text">实际应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#批归一化_Batch_Normalization"><span class="toc-number">2.6.</span> <span class="toc-text">批归一化 Batch Normalization</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#正则化-1"><span class="toc-number">3.</span> <span class="toc-text">正则化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#L2_regularization"><span class="toc-number">3.1.</span> <span class="toc-text">L2 regularization</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#L1_regularization"><span class="toc-number">3.2.</span> <span class="toc-text">L1 regularization</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Max_norm_constraints"><span class="toc-number">3.3.</span> <span class="toc-text">Max norm constraints</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dropout"><span class="toc-number">3.4.</span> <span class="toc-text">Dropout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Theme_of_noise_in_forward_pass"><span class="toc-number">3.5.</span> <span class="toc-text">Theme of noise in forward pass</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bias_regularization"><span class="toc-number">3.6.</span> <span class="toc-text">Bias regularization</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Per-layer_regularization-"><span class="toc-number">3.7.</span> <span class="toc-text">Per-layer regularization.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实践"><span class="toc-number">3.8.</span> <span class="toc-text">实践</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#损失函数"><span class="toc-number">4.</span> <span class="toc-text">损失函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#分类问题"><span class="toc-number">4.1.</span> <span class="toc-text">分类问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Problem:_Large_number_of_classes-"><span class="toc-number">4.2.</span> <span class="toc-text">Problem: Large number of classes.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Attribute_classification"><span class="toc-number">4.3.</span> <span class="toc-text">Attribute classification</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#回归"><span class="toc-number">4.4.</span> <span class="toc-text">回归</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意"><span class="toc-number">4.5.</span> <span class="toc-text">注意</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Structured_prediction"><span class="toc-number">4.6.</span> <span class="toc-text">Structured prediction</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+        <section class="youyan" id="comments">
+  <div id="uyan_frame"></div>
+  <script src="http://v2.uyan.cc/code/uyan.js?uid=2136539"></script>
+</section>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/" title="上一篇: cs231n-(5)神经网络-3：学习和评估">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/09/06/《Deep Learning》(4)-数值计算/" title="下一篇: 《Deep Learning》(4)-数值计算">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/06/14/MXNet/PS-Lite源码分析/">PS-Lite源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/26/Paper笔记/00010_Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition/">Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">Rich feature hierarchies for accurate object detection and semantic segmentation</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">Xception--Deep Learning with Depthwise Separable Convolutios</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">Residual Networks Behave Like Ensembles of Relatively Shallow Networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/Paper笔记/0003_Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift/">Batch Normalization--Accelerating Deep Network Training by Reducing Internal Covariate Shift</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/11/Paper笔记/0002_Understanding the difficulty of training deep feedforward neural networks/">Understanding the difficulty of training deep feedforward neural networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/22/Paper笔记/0001_ILSVRC历届冠军论文笔记/">ILSVRC历届冠军论文笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(9)迁移学习和Fine-tune网络/">cs231n-(9)迁移学习和Fine-tune网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">cs231n-(8)理解和可视化卷积网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/Python实现三层神经网络/">Python实现三层神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">cs231n-(5)神经网络-3：学习和评估</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2017 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

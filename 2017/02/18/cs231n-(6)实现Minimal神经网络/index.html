@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>cs231n-(6)实现Minimal神经网络 | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本节将实现一个神经网络。首先将实现一个线性分类器，之后扩展到实现一个2层的神经网络。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cs231n-(6)实现Minimal神经网络">
+<meta property="og:url" content="http://kangbing.github.io/2017/02/18/cs231n-(6)实现Minimal神经网络/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="本节将实现一个神经网络。首先将实现一个线性分类器，之后扩展到实现一个2层的神经网络。">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n07_01.png">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n07_02.png">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n07_03.png">
+<meta property="og:updated_time" content="2017-04-12T14:51:24.864Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cs231n-(6)实现Minimal神经网络">
+<meta name="twitter:description" content="本节将实现一个神经网络。首先将实现一个线性分类器，之后扩展到实现一个2层的神经网络。">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/BatchNorm/" style="font-size: 10px;">BatchNorm</a> <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Depthwise/" style="font-size: 10px;">Depthwise</a> <a href="/tags/Ensembles/" style="font-size: 10px;">Ensembles</a> <a href="/tags/Inception/" style="font-size: 12.5px;">Inception</a> <a href="/tags/Inception-V3/" style="font-size: 10px;">Inception-V3</a> <a href="/tags/Inception-V4/" style="font-size: 10px;">Inception-V4</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/ParameterServer/" style="font-size: 10px;">ParameterServer</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/R-CNN/" style="font-size: 10px;">R-CNN</a> <a href="/tags/Residual/" style="font-size: 12.5px;">Residual</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/SPP-net/" style="font-size: 10px;">SPP-net</a> <a href="/tags/Xavier/" style="font-size: 10px;">Xavier</a> <a href="/tags/Xception/" style="font-size: 10px;">Xception</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 17.5px;">cs231n</a> <a href="/tags/feature/" style="font-size: 10px;">feature</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 15px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-cs231n-(6)实现Minimal神经网络" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/02/18/cs231n-(6)实现Minimal神经网络/" class="article-date">
+      <time datetime="2017-02-18T13:46:43.000Z" itemprop="datePublished">2017-02-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cs231n-(6)实现Minimal神经网络
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/神经网络/">神经网络</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>本节将实现一个神经网络。首先将实现一个线性分类器，之后扩展到实现一个2层的神经网络。</p>
+<ul>
+<li><a id="more"></a>
+</li>
+</ul>
+<h2 id="生成数据">生成数据</h2><p>首先来生成线性不太容易可分的数据集。下面生成一个螺旋结构的样本集，生成过程和画圆类似，只是半径在依次增大，角度加上了一个随机噪声<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">N = <span class="number">100</span> <span class="comment"># 每类样本个数</span></span><br><span class="line">D = <span class="number">2</span> <span class="comment"># 维度</span></span><br><span class="line">K = <span class="number">3</span> <span class="comment"># 类别数</span></span><br><span class="line">X = np.zeros((N*K,D)) <span class="comment"># data matrix (each row = single example)</span></span><br><span class="line">y = np.zeros(N*K, dtype=<span class="string">'uint8'</span>) <span class="comment"># class labels</span></span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> xrange(K):</span><br><span class="line">  ix = range(N*j,N*(j+<span class="number">1</span>))</span><br><span class="line">  r = np.linspace(<span class="number">0.0</span>,<span class="number">1</span>,N) <span class="comment"># 半径</span></span><br><span class="line">  t = np.linspace(j*<span class="number">4</span>,(j+<span class="number">1</span>)*<span class="number">4</span>,N) + np.random.randn(N)*<span class="number">0.2</span> <span class="comment"># 角度，加上是一个随机噪声</span></span><br><span class="line">  X[ix] = np.c_[r*np.sin(t), r*np.cos(t)]</span><br><span class="line">  y[ix] = j</span><br><span class="line">%matplotlib inline</span><br><span class="line"><span class="comment"># lets visualize the data:</span></span><br><span class="line">plt.scatter(X[:, <span class="number">0</span>], X[:, <span class="number">1</span>], c=y, s=<span class="number">40</span>, cmap=plt.cm.Spectral</span><br></pre></td></tr></table></figure></p>
+<p>生成结果如下：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n07_01.png" alt="cs231n07_01.png"><br>样本有三种颜色：蓝、红、黄，它们之间是线性不可分的。</p>
+<p>一般情况下，我们要对数据进行预处理，让每个特征的数据均值为零，方差为1。上面生成的数据值范围为(-1,1)，因此跳过数据预处理这一步。</p>
+<h2 id="训练Softmax线性分类器">训练Softmax线性分类器</h2><p>训练一个Softmax线性分类器来分类来分类这些数据。Softmax线性分类有一个分值函数用来评价每个类别的得分，一个交叉熵损失函数用来计算loss。</p>
+<h3 id="初始化参数">初始化参数</h3><p>线性分类器包含一个权重矩阵<code>W</code>和偏置向量<code>b</code>，用随机数初始化它们</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># initialize parameters randomly</span></span><br><span class="line">W = <span class="number">0.01</span> * np.random.randn(D,K)</span><br><span class="line">b = np.zeros((<span class="number">1</span>,K))</span><br></pre></td></tr></table></figure>
+<h3 id="计算分值">计算分值</h3><p>可以用矩阵相乘计算分值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scores = np.dot(X,W) + b</span><br></pre></td></tr></table></figure>
+<p>上面生成的数据为300个2为数据，所以<code>scores</code>大小为[300x3]，每一行是一个样本对应3类的分值。</p>
+<h3 id="计算loss">计算loss</h3><p>需要定义一个loss函数，这个函数可导，用来衡量分值的匹配情况。直观上看，我们想要正确的类别分值高，错误的类别分值低；有许多方法可以量化这个分类标准，本节使用交叉熵loss。$f$是分值数组，每个元素对应某一类别的分值，那么Softmax分类器计算loss：</p>
+
+$$
+L_i = - \log(\frac{e^{f_{y_i}}}{\sum_j e^{f_j}})
+$$
+
+<p>Softmax分类器把分值先进行归一化，得到概率，再取对数、取反，得到loss值。可以看出，概率越大，对应的loss值越小。</p>
+<p>Loss一般由data loss和正则化loss组成</p>
+
+$$
+L =  \underbrace{ \frac{1}{N} \sum_i L_i }_\text{data loss} + \underbrace{ \frac{1}{2} \lambda \sum_k\sum_l W_{k,l}^2 }_\text{regularization loss} \\\\
+$$
+
+<p>的到上面的<code>scores</code>后，我们首先计算概率</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># get unnormalized probabilities</span></span><br><span class="line">exp_scores = np.exp(scores)</span><br><span class="line"><span class="comment"># normalize them for each example</span></span><br><span class="line">probs = exp_scores / np.sum(exp_scores, axis=<span class="number">1</span>, keepdims=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<p>得到的概率<code>probs</code>已经归一化，大小为[300 x 3]，每一行对应3个类别的得分。下面计算正确类别的log对数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">corect_logprobs = -np.log(probs[range(num_examples),y])</span><br></pre></td></tr></table></figure>
+<p><code>corect_logprobs</code>是一维的向量，对应正确类别的loss。最终的loss是data loss的平均加上正则化losss</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compute the loss: average cross-entropy loss and regularization</span></span><br><span class="line">data_loss = np.sum(corect_logprobs)/num_examples</span><br><span class="line">reg_loss = <span class="number">0.5</span>*reg*np.sum(W*W)</span><br><span class="line">loss = data_loss + reg_loss</span><br></pre></td></tr></table></figure>
+<p>上面代码中，正则化强度$\lambda$包含在<code>reg</code>中。在训练开始时，很可能<code>loss = 1.1</code>，即等于<code>np.log(1.0/3)</code>，初始时每一类得分可能会很接近。</p>
+<h3 id="计算方向传播的分析梯度">计算方向传播的分析梯度</h3><p>我们已经有了评估loss的方法，现在要做的就是最小化它。下面使用梯度下降法。引入中间变量$p$，它是归一化后的概率向量</p>
+
+$$
+p_k = \frac{e^{f_k}}{ \sum_j e^{f_j} } \hspace{1in} L_i =-\log\left(p_{y_i}\right)
+$$
+
+<p>现在要理解，计算得到的分值$f$怎样才能减小loss$L_i$。即求导数$\partial L_i / \partial f_k$，$L_i$由$p$计算得到，$p$依赖$f$</p>
+
+$$
+\frac{\partial L_i }{ \partial f_k } = p_k - \mathbb{1}(y_i = k)
+$$
+
+<p>假设 <code>p=[0.2 ,0.3, 0.5]</code>，正确类别对应的得分为<code>0.3</code>，根据上面的公式，求导后结果为<code>df=[0.2, -0.7, 0.5]</code>。直观上看，中间元素导数为负，增加中间的得分，loss函数就会减小。<br><code>prob</code>每行存储每个样本对应类别的分值，计算分值的梯度<code>dscores</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dscores = probs</span><br><span class="line">dscores[range(num_examples),y] -= <span class="number">1</span></span><br><span class="line">dscores /= num_examples</span><br></pre></td></tr></table></figure>
+<p>分值是由<code>scores = np.dot(X, W) + b</code>计算得到，计算权重和偏置的导数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dW = np.dot(X.T, dscores)</span><br><span class="line">db = np.sum(dscores, axis=<span class="number">0</span>, keepdims=<span class="keyword">True</span>)</span><br><span class="line">dW += reg*W <span class="comment"># don't forget the regularization gradient</span></span><br></pre></td></tr></table></figure>
+<p>使用矩阵相乘计算反向传播，不要忘记正则化的导数</p>
+<h3 id="执行更新">执行更新</h3><p>向梯度反方向前进</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># perform a parameter update</span></span><br><span class="line">W += -step_size * dW</span><br><span class="line">b += -step_size * db</span><br></pre></td></tr></table></figure>
+<p>最终整合：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line">N = <span class="number">100</span> <span class="comment"># number of points per class</span></span><br><span class="line">D = <span class="number">2</span> <span class="comment"># dimensionality</span></span><br><span class="line">K = <span class="number">3</span> <span class="comment"># number of classes</span></span><br><span class="line">X = np.zeros((N*K,D)) <span class="comment"># data matrix (each row = single example)</span></span><br><span class="line">y = np.zeros(N*K, dtype=<span class="string">'uint8'</span>) <span class="comment"># class labels</span></span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> xrange(K):</span><br><span class="line">  ix = range(N*j,N*(j+<span class="number">1</span>))</span><br><span class="line">  r = np.linspace(<span class="number">0.0</span>,<span class="number">1</span>,N) <span class="comment"># radius</span></span><br><span class="line">  t = np.linspace(j*<span class="number">4</span>,(j+<span class="number">1</span>)*<span class="number">4</span>,N) + np.random.randn(N)*<span class="number">0.2</span> <span class="comment"># theta</span></span><br><span class="line">  X[ix] = np.c_[r*np.sin(t), r*np.cos(t)]</span><br><span class="line">  y[ix] = j</span><br><span class="line"><span class="comment"># lets visualize the data:</span></span><br><span class="line">plt.scatter(X[:, <span class="number">0</span>], X[:, <span class="number">1</span>], c=y, s=<span class="number">40</span>, cmap=plt.cm.Spectral)</span><br><span class="line"><span class="comment">#Train a Linear Classifier</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># initialize parameters randomly</span></span><br><span class="line">W = <span class="number">0.01</span> * np.random.randn(D,K)</span><br><span class="line">b = np.zeros((<span class="number">1</span>,K))</span><br><span class="line"></span><br><span class="line"><span class="comment"># some hyperparameters</span></span><br><span class="line">step_size = <span class="number">1e-0</span></span><br><span class="line">reg = <span class="number">1e-3</span> <span class="comment"># regularization strength</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># gradient descent loop</span></span><br><span class="line">num_examples = X.shape[<span class="number">0</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">200</span>):</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># evaluate class scores, [N x K]</span></span><br><span class="line">  scores = np.dot(X, W) + b </span><br><span class="line">  </span><br><span class="line">  <span class="comment"># compute the class probabilities</span></span><br><span class="line">  exp_scores = np.exp(scores)</span><br><span class="line">  probs = exp_scores / np.sum(exp_scores, axis=<span class="number">1</span>, keepdims=<span class="keyword">True</span>) <span class="comment"># [N x K]</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># compute the loss: average cross-entropy loss and regularization</span></span><br><span class="line">  corect_logprobs = -np.log(probs[range(num_examples),y])</span><br><span class="line">  data_loss = np.sum(corect_logprobs)/num_examples</span><br><span class="line">  reg_loss = <span class="number">0.5</span>*reg*np.sum(W*W)</span><br><span class="line">  loss = data_loss + reg_loss</span><br><span class="line">  <span class="keyword">if</span> i % <span class="number">10</span> == <span class="number">0</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"iteration %d: loss %f"</span> % (i, loss)</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># compute the gradient on scores</span></span><br><span class="line">  dscores = probs</span><br><span class="line">  dscores[range(num_examples),y] -= <span class="number">1</span></span><br><span class="line">  dscores /= num_examples</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># backpropate the gradient to the parameters (W,b)</span></span><br><span class="line">  dW = np.dot(X.T, dscores)</span><br><span class="line">  db = np.sum(dscores, axis=<span class="number">0</span>, keepdims=<span class="keyword">True</span>)</span><br><span class="line">  </span><br><span class="line">  dW += reg*W <span class="comment"># regularization gradient</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># perform a parameter update</span></span><br><span class="line">  W += -step_size * dW</span><br><span class="line">  b += -step_size * db</span><br></pre></td></tr></table></figure>
+<p>得到输出<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">iteration <span class="number">0</span>: loss <span class="number">1.098499</span></span><br><span class="line">iteration <span class="number">10</span>: loss <span class="number">0.905020</span></span><br><span class="line">iteration <span class="number">20</span>: loss <span class="number">0.833327</span></span><br><span class="line">iteration <span class="number">30</span>: loss <span class="number">0.800789</span></span><br><span class="line">iteration <span class="number">40</span>: loss <span class="number">0.783818</span></span><br><span class="line">iteration <span class="number">50</span>: loss <span class="number">0.774114</span></span><br><span class="line">iteration <span class="number">60</span>: loss <span class="number">0.768204</span></span><br><span class="line">iteration <span class="number">70</span>: loss <span class="number">0.764437</span></span><br><span class="line">iteration <span class="number">80</span>: loss <span class="number">0.761952</span></span><br><span class="line">iteration <span class="number">90</span>: loss <span class="number">0.760271</span></span><br><span class="line">iteration <span class="number">100</span>: loss <span class="number">0.759109</span></span><br><span class="line">iteration <span class="number">110</span>: loss <span class="number">0.758293</span></span><br><span class="line">iteration <span class="number">120</span>: loss <span class="number">0.757712</span></span><br><span class="line">iteration <span class="number">130</span>: loss <span class="number">0.757294</span></span><br><span class="line">iteration <span class="number">140</span>: loss <span class="number">0.756990</span></span><br><span class="line">iteration <span class="number">150</span>: loss <span class="number">0.756768</span></span><br><span class="line">iteration <span class="number">160</span>: loss <span class="number">0.756604</span></span><br><span class="line">iteration <span class="number">170</span>: loss <span class="number">0.756483</span></span><br><span class="line">iteration <span class="number">180</span>: loss <span class="number">0.756393</span></span><br><span class="line">iteration <span class="number">190</span>: loss <span class="number">0.756326</span></span><br></pre></td></tr></table></figure></p>
+<p>运行完之后，可以测试准确率<br><figure class="highlight ceylon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scores = np.dot(X, W) + b</span><br><span class="line">predicted<span class="number">_</span><span class="keyword">class</span> = np.argmax(scores, axis=<span class="number">1</span>)</span><br><span class="line">print <span class="string">'training accuracy: %.2f'</span> % (np.mean(predicted<span class="number">_</span><span class="keyword">class</span> == y))</span><br></pre></td></tr></table></figure></p>
+<p>得到：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">training accuracy: <span class="number">0.52</span></span><br></pre></td></tr></table></figure></p>
+<p>可以看出，线性分类器并不能很好的分类。可视化分类边界<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n07_02.png" alt="cs231n07_02.png"></p>
+<h2 id="训练神经网络分类器">训练神经网络分类器</h2><p>线性分类器不能很好的分类这些数据，下面使用神经网络来分类。一个隐藏层就可以分好分类这些数据（增加了非线性），需要训练两层网络的参数。</p>
+<p>和前面线性分类器不同的是，第一层输出经过ReLU后输入到隐藏层，之后输出。ReLU表达式为<br>
+$$
+r = max(0,x)
+$$
+</p>
+<p>那么求导时，变为：<br>
+$$
+\frac{dr}{dx}=1(x>0)
+$$
+<br>可以看出，如果输入大于0，那么允许梯度通过，否则不允许梯度通过。<br>训练好之后，评估网络的性能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span>  numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">N = <span class="number">100</span> <span class="comment"># number of points per class</span></span><br><span class="line">D = <span class="number">2</span> <span class="comment"># dimensionality</span></span><br><span class="line">K = <span class="number">3</span> <span class="comment"># number of classes</span></span><br><span class="line">X = np.zeros((N*K,D)) <span class="comment"># data matrix (each row = single example)</span></span><br><span class="line">y = np.zeros(N*K, dtype=<span class="string">'uint8'</span>) <span class="comment"># class labels</span></span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> xrange(K):</span><br><span class="line">  ix = range(N*j,N*(j+<span class="number">1</span>))</span><br><span class="line">  r = np.linspace(<span class="number">0.0</span>,<span class="number">1</span>,N) <span class="comment"># radius</span></span><br><span class="line">  t = np.linspace(j*<span class="number">4</span>,(j+<span class="number">1</span>)*<span class="number">4</span>,N) + np.random.randn(N)*<span class="number">0.2</span> <span class="comment"># theta</span></span><br><span class="line">  X[ix] = np.c_[r*np.sin(t), r*np.cos(t)]</span><br><span class="line">  y[ix] = j</span><br><span class="line"></span><br><span class="line"><span class="comment"># initialize parameters randomly</span></span><br><span class="line">h = <span class="number">100</span>  <span class="comment"># size of hidden layer</span></span><br><span class="line">W = <span class="number">0.01</span> * np.random.randn(D, h)</span><br><span class="line">b = np.zeros((<span class="number">1</span>, h))</span><br><span class="line">W2 = <span class="number">0.01</span> * np.random.randn(h, K)</span><br><span class="line">b2 = np.zeros((<span class="number">1</span>, K))</span><br><span class="line"></span><br><span class="line"><span class="comment"># some hyperparameters</span></span><br><span class="line">step_size = <span class="number">1e-0</span></span><br><span class="line">reg = <span class="number">1e-3</span>  <span class="comment"># regularization strength</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># gradient descent loop</span></span><br><span class="line">num_examples = X.shape[<span class="number">0</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">10000</span>):</span><br><span class="line"></span><br><span class="line">    <span class="comment"># evaluate class scores, [N x K]</span></span><br><span class="line">    hidden_layer = np.maximum(<span class="number">0</span>, np.dot(X, W) + b)  <span class="comment"># note, ReLU activation</span></span><br><span class="line">    scores = np.dot(hidden_layer, W2) + b2</span><br><span class="line"></span><br><span class="line">    <span class="comment"># compute the class probabilities</span></span><br><span class="line">    exp_scores = np.exp(scores)</span><br><span class="line">    probs = exp_scores / np.sum(exp_scores, axis=<span class="number">1</span>, keepdims=<span class="keyword">True</span>)  <span class="comment"># [N x K]</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># compute the loss: average cross-entropy loss and regularization</span></span><br><span class="line">    corect_logprobs = -np.log(probs[range(num_examples), y])</span><br><span class="line">    data_loss = np.sum(corect_logprobs) / num_examples</span><br><span class="line">    reg_loss = <span class="number">0.5</span> * reg * np.sum(W * W) + <span class="number">0.5</span> * reg * np.sum(W2 * W2)</span><br><span class="line">    loss = data_loss + reg_loss</span><br><span class="line">    <span class="keyword">if</span> i % <span class="number">1000</span> == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">print</span> <span class="string">"iteration %d: loss %f"</span> % (i, loss)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># compute the gradient on scores</span></span><br><span class="line">    dscores = probs</span><br><span class="line">    dscores[range(num_examples), y] -= <span class="number">1</span></span><br><span class="line">    dscores /= num_examples</span><br><span class="line"></span><br><span class="line">    <span class="comment"># backpropate the gradient to the parameters</span></span><br><span class="line">    <span class="comment"># first backprop into parameters W2 and b2</span></span><br><span class="line">    dW2 = np.dot(hidden_layer.T, dscores)</span><br><span class="line">    db2 = np.sum(dscores, axis=<span class="number">0</span>, keepdims=<span class="keyword">True</span>)</span><br><span class="line">    <span class="comment"># next backprop into hidden layer</span></span><br><span class="line">    dhidden = np.dot(dscores, W2.T)</span><br><span class="line">    <span class="comment"># backprop the ReLU non-linearity</span></span><br><span class="line">    dhidden[hidden_layer &lt;= <span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">    <span class="comment"># finally into W,b</span></span><br><span class="line">    dW = np.dot(X.T, dhidden)</span><br><span class="line">    db = np.sum(dhidden, axis=<span class="number">0</span>, keepdims=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># add regularization gradient contribution</span></span><br><span class="line">    dW2 += reg * W2</span><br><span class="line">    dW += reg * W</span><br><span class="line"></span><br><span class="line">    <span class="comment"># perform a parameter update</span></span><br><span class="line">    W += -step_size * dW</span><br><span class="line">    b += -step_size * db</span><br><span class="line">    W2 += -step_size * dW2</span><br><span class="line">    b2 += -step_size * db2</span><br><span class="line"><span class="comment"># evaluate training set accuracy</span></span><br><span class="line">hidden_layer = np.maximum(<span class="number">0</span>, np.dot(X, W) + b)</span><br><span class="line">scores = np.dot(hidden_layer, W2) + b2</span><br><span class="line">predicted_class = np.argmax(scores, axis=<span class="number">1</span>)</span><br><span class="line"><span class="keyword">print</span> <span class="string">'training accuracy: %.2f'</span> % (np.mean(predicted_class == y))</span><br></pre></td></tr></table></figure>
+<p>得到输出：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">iteration <span class="number">0</span>: loss <span class="number">1.098731</span></span><br><span class="line">iteration <span class="number">1000</span>: loss <span class="number">0.354729</span></span><br><span class="line">iteration <span class="number">2000</span>: loss <span class="number">0.276981</span></span><br><span class="line">iteration <span class="number">3000</span>: loss <span class="number">0.246608</span></span><br><span class="line">iteration <span class="number">4000</span>: loss <span class="number">0.247844</span></span><br><span class="line">iteration <span class="number">5000</span>: loss <span class="number">0.245945</span></span><br><span class="line">iteration <span class="number">6000</span>: loss <span class="number">0.246020</span></span><br><span class="line">iteration <span class="number">7000</span>: loss <span class="number">0.245587</span></span><br><span class="line">iteration <span class="number">8000</span>: loss <span class="number">0.245091</span></span><br><span class="line">iteration <span class="number">9000</span>: loss <span class="number">0.244915</span></span><br><span class="line">training accuracy: <span class="number">0.98</span></span><br></pre></td></tr></table></figure></p>
+<p>可视化神经网络分类边界：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n07_03.png" alt="cs231n07_03.png"></p>
+<h2 id="总结">总结</h2><p>使用很简单的2维数据训练线性分类器和2层神经网络，可以看出，从线性分类器改为神经网络只需要很简单修改，但是性能有极大提升。</p>
+<p>参考： <a href="http://cs.stanford.edu/people/karpathy/cs231nfiles/minimal_net.html" target="_blank" rel="external">IPython Notebook code</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2017年02月18日 - 21时46分</p>
+        <p><span>最后更新:</span>2017年04月12日 - 22时51分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/" title="cs231n-(6)实现Minimal神经网络">http://kangbing.github.io/2017/02/18/cs231n-(6)实现Minimal神经网络/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2017/02/18/cs231n-(6)实现Minimal神经网络/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">
+                    cs231n-(7)卷积神经网络：架构，卷积层/池化层
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/12/03/Python实现三层神经网络/">
+                    Python实现三层神经网络
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成数据"><span class="toc-number">1.</span> <span class="toc-text">生成数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#训练Softmax线性分类器"><span class="toc-number">2.</span> <span class="toc-text">训练Softmax线性分类器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化参数"><span class="toc-number">2.1.</span> <span class="toc-text">初始化参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#计算分值"><span class="toc-number">2.2.</span> <span class="toc-text">计算分值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#计算loss"><span class="toc-number">2.3.</span> <span class="toc-text">计算loss</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#计算方向传播的分析梯度"><span class="toc-number">2.4.</span> <span class="toc-text">计算方向传播的分析梯度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行更新"><span class="toc-number">2.5.</span> <span class="toc-text">执行更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#训练神经网络分类器"><span class="toc-number">3.</span> <span class="toc-text">训练神经网络分类器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+        <section class="youyan" id="comments">
+  <div id="uyan_frame"></div>
+  <script src="http://v2.uyan.cc/code/uyan.js?uid=2136539"></script>
+</section>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/" title="上一篇: cs231n-(7)卷积神经网络：架构，卷积层/池化层">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/12/03/Python实现三层神经网络/" title="下一篇: Python实现三层神经网络">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/06/14/MXNet/PS-Lite源码分析/">PS-Lite源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/26/Paper笔记/00010_Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition/">Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">Rich feature hierarchies for accurate object detection and semantic segmentation</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">Xception--Deep Learning with Depthwise Separable Convolutios</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">Residual Networks Behave Like Ensembles of Relatively Shallow Networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/Paper笔记/0003_Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift/">Batch Normalization--Accelerating Deep Network Training by Reducing Internal Covariate Shift</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/11/Paper笔记/0002_Understanding the difficulty of training deep feedforward neural networks/">Understanding the difficulty of training deep feedforward neural networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/22/Paper笔记/0001_ILSVRC历届冠军论文笔记/">ILSVRC历届冠军论文笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(9)迁移学习和Fine-tune网络/">cs231n-(9)迁移学习和Fine-tune网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">cs231n-(8)理解和可视化卷积网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/Python实现三层神经网络/">Python实现三层神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">cs231n-(5)神经网络-3：学习和评估</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2017 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>
