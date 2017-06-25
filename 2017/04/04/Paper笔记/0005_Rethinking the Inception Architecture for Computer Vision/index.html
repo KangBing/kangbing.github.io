@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Rethinking the Inception Architecture for Computer Vision | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="通过改进Inception模块，分解卷积，提出了Inception V3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rethinking the Inception Architecture for Computer Vision">
+<meta property="og:url" content="http://kangbing.github.io/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="通过改进Inception模块，分解卷积，提出了Inception V3">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_01.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_02.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_03.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_04.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_05.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_06.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_07.jpg">
+<meta property="og:updated_time" content="2017-04-12T15:20:54.628Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Rethinking the Inception Architecture for Computer Vision">
+<meta name="twitter:description" content="通过改进Inception模块，分解卷积，提出了Inception V3">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/BatchNorm/" style="font-size: 10px;">BatchNorm</a> <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Depthwise/" style="font-size: 10px;">Depthwise</a> <a href="/tags/Ensembles/" style="font-size: 10px;">Ensembles</a> <a href="/tags/Inception/" style="font-size: 12.5px;">Inception</a> <a href="/tags/Inception-V3/" style="font-size: 10px;">Inception-V3</a> <a href="/tags/Inception-V4/" style="font-size: 10px;">Inception-V4</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/ParameterServer/" style="font-size: 10px;">ParameterServer</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/R-CNN/" style="font-size: 10px;">R-CNN</a> <a href="/tags/Residual/" style="font-size: 12.5px;">Residual</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/SPP-net/" style="font-size: 10px;">SPP-net</a> <a href="/tags/Xavier/" style="font-size: 10px;">Xavier</a> <a href="/tags/Xception/" style="font-size: 10px;">Xception</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 17.5px;">cs231n</a> <a href="/tags/feature/" style="font-size: 10px;">feature</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 15px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/" class="article-date">
+      <time datetime="2017-04-04T15:11:29.000Z" itemprop="datePublished">2017-04-04</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Rethinking the Inception Architecture for Computer Vision
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Paper笔记/">Paper笔记</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Inception/">Inception</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Inception-V3/">Inception-V3</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>通过改进Inception模块，分解卷积，提出了Inception V3</p>
+<ul>
+<li><a id="more"></a>
+</li>
+</ul>
+<h2 id="介绍">介绍</h2><p>深度学习在计算机视觉方面取得了很大突破。在2014ILSVRC分类比赛中中，VGG和GoogLeNet取得了优异成绩。卷积网络架构上的改进可以提升计算机视觉各类任务的性能。</p>
+<p>VGG以很朴素的方式描述了特征，但有很大的计算量。GoogLeNet中的Inception结构设计的目的就是减少计算量和内存。GoogLeNet中只有5百万参数，是AlexNet的1/12（6千万参数），VGG参数是AlexNet的3倍多。</p>
+<p>Inception的计算量小，性能优异。可以把它应用到对计算和显存有严格要求的一些场景中。但是Inception结构的复杂性使得网络难改进。如果只是单纯放大网络，计算量的增加带来的增益会立刻消失。GoogLeNet的论文没有描述清楚决定其多样性设计的因素，使得它难以拓展到新的用例上。例如果增大Inception类型模型的容量，如果只是double滤波器组的数量，参数量和计算量将会增大4倍；在许多场景中，不允许这样设计。</p>
+<p>下面讲解几个增大卷积网络的原则和优化方法。</p>
+<h2 id="通用设计原则">通用设计原则</h2><p>这些原则只是原理性的，基于实验结果。</p>
+<p>1、避免表示瓶颈，尤其是在网络的前面。前向传播网络可以看做一个有向无环图，从输入到输出。一般来说，representation size从输入到输出特征应该缓慢减小。理论上来说，不能仅仅通过维度得到信息，因为它已经丢弃了许多重要特征例如相关结构，维度只能代表信息的粗略估计。</p>
+<p>2、高纬度特征在网络局部处理更加容易。在卷积网络中增加非线性尅解耦和更多特征，训练更快。</p>
+<p>3、空间聚合可以以低纬度嵌入进行，这样不会影响representational power。例如，在进行大尺度卷积（3x3）时，在空间聚合前，先对输入进行降维，这样不会带来严重影响。我们猜测原因为：如果输出是为了空间聚合，那么临近单元的强相关性在降维过程中信息损失会很少。考虑到这些信号容易压缩，降维会加速学习过程。</p>
+<p>4、平衡宽度和深度。增加宽度或深度都会带来性能上的提升，两者同时增加带了并行提升，但是要考虑计算资源的合理分配。</p>
+<h2 id="分解大的卷积核">分解大的卷积核</h2><p>GoogLeNet性能优异很大程度在于使用了降维。降维可以看做卷积网络的因式分解。例如1x1卷积层后跟着3x3卷积层。在网络角度看，激活层的输出是高相关的；因此在聚合前进行降维，可以得到类似的局部表示性能。</p>
+<p>这里，考虑计算性能，我们探索其他形式的卷积因式分解。因为Inception结构是全卷积，每一个激活值对应的每一个权重，都对应一个乘法运算。因此减小计算量意味着减少参数。所以通过解耦和参数，可以加快训练。利用节省下来的计算和内存增加filter-bank大小，来提升网络性能。</p>
+<h3 id="分解为更小的卷积">分解为更小的卷积</h3><p>大的卷积计算量更大，例如filter相同情况下，5x5卷积核比3x3卷积核计算量大25/9=2.78倍。5x5卷积核相比3x3卷积核有广阔“视野”，可以捕捉到更多信息，单纯减小卷积核大小会造成信息损失。是否可以通过多层网络替代5x5卷积。把5x5网络看做全卷积，每个输出是卷积核在输入上滑动；可以通过2层的3x3的全卷积网络替换。如下图：</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_01.jpg" alt="rethinking_inception_01.jpg"></p>
+<p>原来的Inception结构：</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_02.jpg" alt="rethinking_inception_02.jpg"></p>
+<p>使用2个3x3替换5x5后的Inception结构：</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_03.jpg" alt="rethinking_inception_03.jpg"></p>
+<p>对于分解的卷积层，使用线性激活还是非线性激活，实验表明，非线性激活性能更好。</p>
+<h3 id="空间上分解为非对称卷积">空间上分解为非对称卷积</h3><p>大于3x3的卷积层，都可以分解为连续的3x3的卷积层，那么是不是可以分解为更小的卷积核呢？实际上分解为非对称的更好。例如一个3x1卷积，后面跟一个1x3卷积，相当于3x3的卷积。如下图：</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_04.jpg" alt="rethinking_inception_04.jpg"></p>
+<p>两层结构计算量减少33%；而2x2卷积代替的话计算量仅仅减少11%。</p>
+<p>理论上，nxn卷积可以通过1xn-&gt;nx1卷积代替，随着n增大，能减少更多计算量。在实践中，在网络前几层这样的分解效果并不好；但是在中等网络中，有这不错的性能（mxm大的feature map，m介于12到20）。在这等尺寸下，1x7-&gt;7x1有着非常好的卷积效果。</p>
+<h2 id="使用辅助分类器">使用辅助分类器</h2><p>GoogLeNet引入了附加分类器，其目的是想把有效梯度传递回去，从而加快训练。我们发现辅助分类器扮演着regularizer的角色；因为当辅助分类器使用了batch-normalized或dropout时，主分类器效果会更好。</p>
+<h2 id="降低特征图大小">降低特征图大小</h2><p>pooling层用来减小feature map大小。为了避免出现representational bottleneck，在使用pooling前常常增加feature map个数。例如k个dxd的feature map，pooling后为k个$\frac{d}{2} \times \frac{d}{2}$。如果想要得到pooling后有2k个feature map，那么在pooling前面的卷积层卷积核就应该有2k个。前者卷积计算量为$2D^2k^2$，而后者为$2(\frac{d}{2})^2k^2$，是前者四分之一。这样在representation上会有瓶颈。可以使用另一种方法，降低更多计算量：使用2个模块P和C。P表示pooling，C表示卷积；它们stride都为2。如下图所示：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_05.jpg" alt="rethinking_inception_05.jpg"></p>
+<h2 id="Inception-V2">Inception-V2</h2><p>我们提出Inception-V2模型。结构图下图所示：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_06.jpg" alt="rethinking_inception_06.jpg"></p>
+<p>把7x7卷积替换为3个3x3卷积。包含3个Inception部分。第一部分是35x35x288，使用了2个3x3卷积代替了传统的5x5；第二部分减小了feature map，增多了filters，为17x17x768，使用了nx1-&gt;1xn结构；第三部分增多了filter，使用了卷积池化并行结构。网络有42层，但是计算量只有GoogLeNet的2.5倍。</p>
+<h2 id="通过平滑标签正则化模型">通过平滑标签正则化模型</h2><p>输入$x$，模型计算得到类别为$k$的概率</p>
+
+$$
+p(k|x) = \frac{\exp(z_k)}{\sum_{i=1}^K \exp(z_i)}
+$$
+
+<p>假设真实分布为$q(k)$，交叉熵损失函数</p>
+
+$$
+l = -\sum_{k=1}^K \log(p(k))q(k)
+$$
+
+<p>最小化交叉熵等价最大化似然函数。交叉熵函数对逻辑输出求导</p>
+
+$$
+\frac{\partial l}{\partial z_k} = p(k) - q(k)
+$$
+
+<p>假设$q(k) = \delta<em>{k,y}$，当$k=y$时，$\delta</em>{k,y}=1$，当$k \neq y$时，$\delta_{k,y}=0$。实际中，优化时，对于逻辑输出，使得达到$z_y \gg z_k, k \neq y$。这样会导致两个问题，1、over-fitting；2、使得损失函数对逻辑输出的导数差异变大，降低了模型的适应能力。导致这两个问题的原因在于模型对于结果预测太过自信。</p>
+<p>为了避免模型过于自信，引入一个独立于样本分布的变量$u(k)$</p>
+
+$$
+q'(k|x) = (1 - \epsilon) \delta_{k,y} + \epsilon u(k)
+$$
+
+<p>实验中使用均匀分布代替$u(k)$，即$u(k)=\frac{1}{K}$。训练集为ImageNet的实验中，$K=1000, \epsilon=0.1$。</p>
+<h2 id="训练方法">训练方法</h2><p>batch-size=32，epoch=100。SGD+momentum，momentum=0.9。使用RMSProp，decay=0.9，$\epsilon=0.1$，效果达到最好。lr=0.045,每2个epoch，衰减0.94。梯度最大阈值=2.0.</p>
+<h2 id="低分辨率图像的识别">低分辨率图像的识别</h2><p>对于低分辨有图像，使用“高分辨率”receptive field。实践中：1、减小前2个卷积层的stride，2、去掉第一个pooling层。</p>
+<h2 id="实验结果">实验结果</h2><p>单模型，single crop得到的结果<br><img src="http://7xras4.com1.z0.glb.clouddn.com/rethinking_inception_07.jpg" alt="rethinking_inception_07.jpg"></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2017年04月04日 - 23时11分</p>
+        <p><span>最后更新:</span>2017年04月12日 - 23时20分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/" title="Rethinking the Inception Architecture for Computer Vision">http://kangbing.github.io/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">
+                    Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">
+                    Residual Networks Behave Like Ensembles of Relatively Shallow Networks
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#通用设计原则"><span class="toc-number">2.</span> <span class="toc-text">通用设计原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分解大的卷积核"><span class="toc-number">3.</span> <span class="toc-text">分解大的卷积核</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#分解为更小的卷积"><span class="toc-number">3.1.</span> <span class="toc-text">分解为更小的卷积</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空间上分解为非对称卷积"><span class="toc-number">3.2.</span> <span class="toc-text">空间上分解为非对称卷积</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用辅助分类器"><span class="toc-number">4.</span> <span class="toc-text">使用辅助分类器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#降低特征图大小"><span class="toc-number">5.</span> <span class="toc-text">降低特征图大小</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Inception-V2"><span class="toc-number">6.</span> <span class="toc-text">Inception-V2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#通过平滑标签正则化模型"><span class="toc-number">7.</span> <span class="toc-text">通过平滑标签正则化模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#训练方法"><span class="toc-number">8.</span> <span class="toc-text">训练方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#低分辨率图像的识别"><span class="toc-number">9.</span> <span class="toc-text">低分辨率图像的识别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实验结果"><span class="toc-number">10.</span> <span class="toc-text">实验结果</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+        <section class="youyan" id="comments">
+  <div id="uyan_frame"></div>
+  <script src="http://v2.uyan.cc/code/uyan.js?uid=2136539"></script>
+</section>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/" title="上一篇: Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/" title="下一篇: Residual Networks Behave Like Ensembles of Relatively Shallow Networks">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/06/25/MXNet/MXNet Data IO/">MXNet Data IO</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/14/MXNet/PS-Lite源码分析/">PS-Lite源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/26/Paper笔记/00010_Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition/">Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">Rich feature hierarchies for accurate object detection and semantic segmentation</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">Xception--Deep Learning with Depthwise Separable Convolutios</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">Residual Networks Behave Like Ensembles of Relatively Shallow Networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/Paper笔记/0003_Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift/">Batch Normalization--Accelerating Deep Network Training by Reducing Internal Covariate Shift</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/11/Paper笔记/0002_Understanding the difficulty of training deep feedforward neural networks/">Understanding the difficulty of training deep feedforward neural networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/22/Paper笔记/0001_ILSVRC历届冠军论文笔记/">ILSVRC历届冠军论文笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(9)迁移学习和Fine-tune网络/">cs231n-(9)迁移学习和Fine-tune网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">cs231n-(8)理解和可视化卷积网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/Python实现三层神经网络/">Python实现三层神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">cs231n-(5)神经网络-3：学习和评估</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2017 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

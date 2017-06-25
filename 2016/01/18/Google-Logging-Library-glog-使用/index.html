@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Google Logging Library(glog)使用 | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="简介Google Logging Library简称glog，它是基于C++风格的开源日志库，可以像操作流一样输出日志，且定义了各种宏定义了辅助操作。可以通过日志级别来输出日志、通过命令行控制日志、打印条件日志，也可以像断言一样检查条件，不满足条件时终止程序。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Google Logging Library(glog)使用">
+<meta property="og:url" content="http://kangbing.github.io/2016/01/18/Google-Logging-Library-glog-使用/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="简介Google Logging Library简称glog，它是基于C++风格的开源日志库，可以像操作流一样输出日志，且定义了各种宏定义了辅助操作。可以通过日志级别来输出日志、通过命令行控制日志、打印条件日志，也可以像断言一样检查条件，不满足条件时终止程序。">
+<meta property="og:updated_time" content="2016-09-15T15:10:19.084Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Google Logging Library(glog)使用">
+<meta name="twitter:description" content="简介Google Logging Library简称glog，它是基于C++风格的开源日志库，可以像操作流一样输出日志，且定义了各种宏定义了辅助操作。可以通过日志级别来输出日志、通过命令行控制日志、打印条件日志，也可以像断言一样检查条件，不满足条件时终止程序。">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/BatchNorm/" style="font-size: 10px;">BatchNorm</a> <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Depthwise/" style="font-size: 10px;">Depthwise</a> <a href="/tags/Ensembles/" style="font-size: 10px;">Ensembles</a> <a href="/tags/Inception/" style="font-size: 12.5px;">Inception</a> <a href="/tags/Inception-V3/" style="font-size: 10px;">Inception-V3</a> <a href="/tags/Inception-V4/" style="font-size: 10px;">Inception-V4</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/ParameterServer/" style="font-size: 10px;">ParameterServer</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/R-CNN/" style="font-size: 10px;">R-CNN</a> <a href="/tags/Residual/" style="font-size: 12.5px;">Residual</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/SPP-net/" style="font-size: 10px;">SPP-net</a> <a href="/tags/Xavier/" style="font-size: 10px;">Xavier</a> <a href="/tags/Xception/" style="font-size: 10px;">Xception</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 17.5px;">cs231n</a> <a href="/tags/feature/" style="font-size: 10px;">feature</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 15px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-Google-Logging-Library-glog-使用" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/01/18/Google-Logging-Library-glog-使用/" class="article-date">
+      <time datetime="2016-01-18T10:25:07.000Z" itemprop="datePublished">2016-01-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Google Logging Library(glog)使用
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/c/">c++</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/glog/">glog</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/google/">google</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="简介">简介</h2><p>Google Logging Library简称glog，它是基于C++风格的开源日志库，可以像操作流一样输出日志，且定义了各种宏定义了辅助操作。可以通过日志级别来输出日志、通过命令行控制日志、打印条件日志，也可以像断言一样检查条件，不满足条件时终止程序。</p>
+<ul>
+<li><a id="more"></a>
+<h2 id="安装">安装</h2>下载源码：<a href="https://github.com/google/glog" target="_blank" rel="external">点击这里</a><br>安装：<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">.</span>/configure --prefix=$INSTALL_DIR </span><br><span class="line"> make </span><br><span class="line"> make<span class="instruction"> check </span></span><br><span class="line"> make install</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="日志级别">日志级别</h2><p>日志分为不同级别，不同级别的日志保存在不同的文件。日志级别依次递增为：INFO、WARNING、ERROR、FATAL。FATAL级别的日志不仅会输出日志，还会终止程序。高级别的日志会输出到低级别的日志文件中。<br>在debug模式下（没有定义宏NDEBUG），DFATAL会打印FATAL日志，但是不会终止程序，降为ERROR级别日志。<br>glog日志命名为：<program name="">.<hostname>.<user name="">.log.<severity level="">.<date>.<time>.<pid>。<br>glog默认输出位置为：/tmp/目录。默认情况下，会把ERROR和FATAL级别日志定向输出到stderr。</pid></time></date></severity></user></hostname></program></p>
+<h2 id="使用Flags">使用Flags</h2><p>如果安装了<a href="http://gflags.github.io/gflags/" target="_blank" rel="external">Google gflags library</a>，可以配合一起使用。例如，如果想使用–logtostderr，可以使用命令行<br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./your_application <span class="comment">--logtostderr=1</span></span><br></pre></td></tr></table></figure></p>
+<p>如果没安装<a href="http://gflags.github.io/gflags/" target="_blank" rel="external">Google gflags library</a>，可以加上前缀“GLOG_”<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GLOG_logtostderr=<span class="number">1</span> ./your_application</span><br></pre></td></tr></table></figure></p>
+<p>下面几个是常用的flags<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logtostderr(<span class="keyword">bool</span>, <span class="keyword">default</span> = <span class="literal">false</span>)</span><br></pre></td></tr></table></figure></p>
+<p>日志输出到stderr，而不是输出到文件<br><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stderrthreshold(<span class="built_in">int</span>, <span class="keyword">default</span>=<span class="number">2</span>, which <span class="keyword">is</span> <span class="keyword">ERROR</span>)</span><br></pre></td></tr></table></figure></p>
+<p>这个级别以上的日志除了输出到日志文件，还输出到stderr。INFO, WARNING, ERROR, FATAL 值为 0, 1, 2, 3。<br><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log_dir (<span class="built_in">string</span>, <span class="keyword">default</span>=<span class="string">""</span>)</span><br></pre></td></tr></table></figure></p>
+<p>日志的输出目录<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="preprocessor">## 条件日志</span></span><br><span class="line">有时希望根据条件来打印日志</span><br></pre></td></tr></table></figure></p>
+<p>LOG_IF(INFO, num_cookies &gt; 10) &lt;&lt; “Got lots of cookies”;<br><figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当<span class="escape">`n</span>um_cookies<span class="escape">`大</span>于<span class="number">10</span>时才会打印。这样会打印很多日志，希望每隔<span class="number">10</span>次打印一条日志，可以这样：</span><br></pre></td></tr></table></figure></p>
+<p>LOG_EVERY_N(INFO, 10) &lt;&lt; “Got the “ &lt;&lt; google::COUNTER &lt;&lt; “th cookie”;<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可以把上面两个结合起来使用：</span><br></pre></td></tr></table></figure></p>
+<p>LOG_IF_EVERY_N(INFO, (size &gt; 1024), 10) &lt;&lt; “Got the “ &lt;&lt; google::COUNTER<br>                                           &lt;&lt; “th big cookie”;<br><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">只有前<span class="keyword">N</span>次才输出</span><br></pre></td></tr></table></figure></p>
+<p>LOG_FIRST_N(INFO, 20) &lt;&lt; “Got the “ &lt;&lt; google::COUNTER &lt;&lt; “th cookie”;<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="preprocessor">## 调试模式</span></span><br><span class="line">调试模式的日志宏只在调试模式起作用，例如：</span><br></pre></td></tr></table></figure></p>
+<p>DLOG(INFO) &lt;&lt; “Found cookies”;</p>
+<p>DLOG_IF(INFO, num_cookies &gt; 10) &lt;&lt; “Got lots of cookies”;</p>
+<p>DLOG_EVERY_N(INFO, 10) &lt;&lt; “Got the “ &lt;&lt; google::COUNTER &lt;&lt; “th cookie”;<br>```</p>
+<h2 id="宏检查">宏检查</h2>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2016年01月18日 - 18时25分</p>
+        <p><span>最后更新:</span>2016年09月15日 - 23时10分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/01/18/Google-Logging-Library-glog-使用/" title="Google Logging Library(glog)使用">http://kangbing.github.io/2016/01/18/Google-Logging-Library-glog-使用/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2016/01/18/Google-Logging-Library-glog-使用/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/02/27/机器学习(1)-概念/">
+                    机器学习(1)-概念
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/01/10/获取目录下的所有子目录和文件/">
+                    获取目录下的所有子目录和文件
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装"><span class="toc-number">2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#日志级别"><span class="toc-number">3.</span> <span class="toc-text">日志级别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用Flags"><span class="toc-number">4.</span> <span class="toc-text">使用Flags</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#宏检查"><span class="toc-number">5.</span> <span class="toc-text">宏检查</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+        <section class="youyan" id="comments">
+  <div id="uyan_frame"></div>
+  <script src="http://v2.uyan.cc/code/uyan.js?uid=2136539"></script>
+</section>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/02/27/机器学习(1)-概念/" title="上一篇: 机器学习(1)-概念">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/01/10/获取目录下的所有子目录和文件/" title="下一篇: 获取目录下的所有子目录和文件">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/06/25/MXNet/MXNet Data IO/">MXNet Data IO</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/14/MXNet/PS-Lite源码分析/">PS-Lite源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/26/Paper笔记/00010_Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition/">Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">Rich feature hierarchies for accurate object detection and semantic segmentation</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">Xception--Deep Learning with Depthwise Separable Convolutios</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">Residual Networks Behave Like Ensembles of Relatively Shallow Networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/Paper笔记/0003_Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift/">Batch Normalization--Accelerating Deep Network Training by Reducing Internal Covariate Shift</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/11/Paper笔记/0002_Understanding the difficulty of training deep feedforward neural networks/">Understanding the difficulty of training deep feedforward neural networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/22/Paper笔记/0001_ILSVRC历届冠军论文笔记/">ILSVRC历届冠军论文笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(9)迁移学习和Fine-tune网络/">cs231n-(9)迁移学习和Fine-tune网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">cs231n-(8)理解和可视化卷积网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/Python实现三层神经网络/">Python实现三层神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">cs231n-(5)神经网络-3：学习和评估</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2017 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>A Neural Algorithm of Artistic Style | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="图像内容和风格都是比较抽象的，这篇文章通过深度学习，提取了图像内容和风格，并将两者合并，生成新的图像。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Neural Algorithm of Artistic Style">
+<meta property="og:url" content="http://kangbing.github.io/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="图像内容和风格都是比较抽象的，这篇文章通过深度学习，提取了图像内容和风格，并将两者合并，生成新的图像。">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/neural_01.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/neural_02.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/neural_03.jpg">
+<meta property="og:updated_time" content="2017-04-13T14:31:23.093Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="A Neural Algorithm of Artistic Style">
+<meta name="twitter:description" content="图像内容和风格都是比较抽象的，这篇文章通过深度学习，提取了图像内容和风格，并将两者合并，生成新的图像。">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/BatchNorm/" style="font-size: 10px;">BatchNorm</a> <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Depthwise/" style="font-size: 10px;">Depthwise</a> <a href="/tags/Ensembles/" style="font-size: 10px;">Ensembles</a> <a href="/tags/Inception/" style="font-size: 12.5px;">Inception</a> <a href="/tags/Inception-V3/" style="font-size: 10px;">Inception-V3</a> <a href="/tags/Inception-V4/" style="font-size: 10px;">Inception-V4</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/ParameterServer/" style="font-size: 10px;">ParameterServer</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/R-CNN/" style="font-size: 10px;">R-CNN</a> <a href="/tags/Residual/" style="font-size: 12.5px;">Residual</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/SPP-net/" style="font-size: 10px;">SPP-net</a> <a href="/tags/Xavier/" style="font-size: 10px;">Xavier</a> <a href="/tags/Xception/" style="font-size: 10px;">Xception</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 17.5px;">cs231n</a> <a href="/tags/feature/" style="font-size: 10px;">feature</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 15px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-Paper笔记/0008_A Neural Algorithm of Artistic Style" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/" class="article-date">
+      <time datetime="2017-04-13T14:31:24.000Z" itemprop="datePublished">2017-04-13</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      A Neural Algorithm of Artistic Style
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Paper笔记/">Paper笔记</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/feature/">feature</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>图像内容和风格都是比较抽象的，这篇文章通过深度学习，提取了图像内容和风格，并将两者合并，生成新的图像。</p>
+<ul>
+<li><a id="more"></a>
+</li>
+</ul>
+<h1 id="A_Neural_Algorithm_of_Artistic_Style">A Neural Algorithm of Artistic Style</h1><p>标签（空格分隔）： PaperRead</p>
+<hr>
+<p>画家画画有独特的风格。之前，没有人工智能系统可以学习画的风格。深度学习在图像分类、人脸识别、物体检测等领域取得了成功。本文提出基于深度学习的算法，将画的内容（content）和风格（style）区分开来。取一幅画的style，另一幅画的content，将两者合并创造出新的画。</p>
+<p>卷积神经网络通过不同的Layer学习不同feature，每层的输出都是一系列的feature map。</p>
+<p>当训练神经网络进行object recognition时，不同的层学习到图像的不同表示。从输入的像素值逐渐到图像内容。通过不同层的feature map重建，可以看出，higher layer学习到的是high-level <em>content</em>；lower layer的feature map重建是提取了原图的像素值。</p>
+<p>通过设计捕捉纹理信息（texture information）的feature空间，来得到图像style的表示。feature空间基于top filter response，包含了不同空间的filter response的相关性。最终得到了图像不同尺度的捕捉texture information的表示。</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/neural_01.jpg" alt="neural_01.jpg"></p>
+<p>上图表示给定输入图像，不同层的feature map的表示。网络越深，filter越多，但是filtered image size在减小。</p>
+<p><strong>Content ReConstruction</strong>，通过VGG-Network的‘conv1_1(a)’， ‘conv2_1(b)’， ‘conv3_1(d)’， ‘conv5_1(e)’的feature map重建输入图像。lower layer（a,b,c）重建的图像很接近原图，higher layer重建得到图像content。</p>
+<p><strong>Style Reconstruction</strong>， 在原始CNN表示的顶端构建了新的feature空间来捕获输入图像的style。style表示计算不同layer feature的相关性。在layer的子集上重建( ‘conv1 1’ (a), ‘conv1 1’ and ‘conv2 1’ (b), ‘conv1 1’, ‘conv2 1’ and ‘conv3 1’ (c), ‘conv1 1’, ‘conv2 1’, ‘conv3 1’ and ‘conv4 1’ (d), ‘conv1 1’, ‘conv2 1’, ‘conv3 1’, ‘conv4 1’<br>and ‘conv5 1’ (e))。丢弃scene信息越多，越能得到图像的style。从style feature生成关于图像的纹理，就是呈现出颜色和局部结构。</p>
+<p>这篇文章主要发现就是通过卷积神经网络可以将图像的content和style分开。这样可以将不同图像的content和style合成，生成新的图像。将图像内容和名画style合成，如下图所示：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/neural_02.jpg" alt="neural_02.jpg"></p>
+<p>通过不同层来生成style，可以得到不同合成图片（下图行之间的对比）。通过higher layer来生成时，生成图像效果更好（下图最后一行）。</p>
+<p>style和content不存在完美的合成。在合成时，最小化的loss函数包含content loss和style loss。权重不同，生成图片不同（如下图列之间对比）。</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/neural_03.jpg" alt="neural_03.jpg"><br>上图每列上面的数字是$\alpha / \beta$的比值，即content和style重要性。</p>
+<h2 id="Methods">Methods</h2><p>这里使用VGG-Network，具体是16个卷积层和5个pooling层的19层网络。没有使用全连接层。将max-pooling替换为average pooling，改善梯度流动，可以得到更好结果。</p>
+<p>一个layer，有$N_l$个不同的filter，包含$N_l$个feature map，feature map大小为width x height = $M_l$。layer $l$的相应可以存储到矩阵$F^l \in R^{N_l \times M<em>l}$，$F</em>{ij}^l$表示$l$层的第$i$个fiter在$j$位置的激活值。为了根据content生存图像，用白噪声图像$\vec x$和原图$\vec p$输入到网络，得到不同层的激活值$P^l$和$F^l$，最小化它们之间的平方差，使用它梯度下降法得到$\vec p$</p>
+
+$$
+L_{content}(\vec p, \vec x, l) = \frac{1}{2} \sum_{ij}(F_{ij}^l - P_{ij}^l)
+$$
+
+<p>损失函数对第$l$层的激活值求导：</p>
+
+$$
+\frac{\partial L_{content}}{\partial F_{ij}^l} = \left\{
+\begin{array}{rl}
+(F^l - P^l)_{ij} \quad if \quad F_{ij}^l > 0\\
+0 \qquad \qquad \quad if \quad F_{ij}^l < 0
+\end{array}
+\right.
+$$
+
+<p>使用反向传播，训练，改变白噪声图像$\vec x$的值，这样得到的图像content会和原图$\vec p$content相近。重建content使用的是VGG的五个层。</p>
+<p>重建content，是根据激活值来重建。重建style，是根据不同filter得到的激活值之间的相关性来重建。因为style在图像中的表现就是纹理特征，即像素之间的相关性。到了high-lever layer，体现在不同feature map之间的相关性上。通过求得Gram矩阵$G^l \in R^{N_l \times N<em>l}$，这里的$G</em>{ij}^l$是第$l$层$i$和$j$ feature map向量化后的内积</p>
+
+$$
+G_{ij}^l = \sum_k F_{ik}^l F_{jk}^l
+$$
+
+<p>原图像$\vec a$和白噪声图像$\vec x$，分别计算$l$层的Gram矩阵$A^l$和$G^l$，这一层的loss函数为：</p>
+
+$$
+E_l = \frac{1}{4N_l^2 M_l^2} \sum_{ij}(G_{ij}^l - A_{ij}^l)^2
+$$
+
+<p>总的loss</p>
+
+$$
+L_{style}(\vec a, \vec x) = \sum_{l=0}^L w_l E_l
+$$
+
+<p>$w_l$表示第$l$层的权重。$E_l$关于$l$层激活值的导数：</p>
+
+$$
+\frac{\partial E_l}{\partial F_{ij}^l} = 
+\left\{
+\begin{array}{rl}
+\frac{1}{N_l^2 M_l^2} ((F^l)^T (G^l - A^l))_{ji}\quad if \quad F_{ij}^l > 0\\
+0 \qquad \qquad \qquad \qquad \qquad \qquad if \quad F_{ij}^l < 0
+\end{array}
+\right.
+$$
+
+<p>求得总的loss，$\vec p$是content原图，$\vec a$是style原图。</p>
+
+$$
+L_{total}(\vec p, \vec a, \vec x) = \alpha L_{contenx}(\vec p, \vec x) + \beta L_{style}(\vec a, \vec x)
+$$
+
+<p>$\alpha$和$\beta$关于content和style的权重系数，$\alpha / \beta$比值，决定生成的图像更多来自style还是content。前面图片有展示。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2017年04月13日 - 22时31分</p>
+        <p><span>最后更新:</span>2017年04月13日 - 22时31分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/" title="A Neural Algorithm of Artistic Style">http://kangbing.github.io/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">
+                    Rich feature hierarchies for accurate object detection and semantic segmentation
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">
+                    Xception--Deep Learning with Depthwise Separable Convolutios
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#A_Neural_Algorithm_of_Artistic_Style"><span class="toc-number">1.</span> <span class="toc-text">A Neural Algorithm of Artistic Style</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Methods"><span class="toc-number">1.1.</span> <span class="toc-text">Methods</span></a></li></ol></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+        <section class="youyan" id="comments">
+  <div id="uyan_frame"></div>
+  <script src="http://v2.uyan.cc/code/uyan.js?uid=2136539"></script>
+</section>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/" title="上一篇: Rich feature hierarchies for accurate object detection and semantic segmentation">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/" title="下一篇: Xception--Deep Learning with Depthwise Separable Convolutios">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/06/25/MXNet/MXNet Data IO/">MXNet Data IO</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/14/MXNet/PS-Lite源码分析/">PS-Lite源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/26/Paper笔记/00010_Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition/">Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">Rich feature hierarchies for accurate object detection and semantic segmentation</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">Xception--Deep Learning with Depthwise Separable Convolutios</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">Residual Networks Behave Like Ensembles of Relatively Shallow Networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/Paper笔记/0003_Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift/">Batch Normalization--Accelerating Deep Network Training by Reducing Internal Covariate Shift</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/11/Paper笔记/0002_Understanding the difficulty of training deep feedforward neural networks/">Understanding the difficulty of training deep feedforward neural networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/22/Paper笔记/0001_ILSVRC历届冠军论文笔记/">ILSVRC历届冠军论文笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(9)迁移学习和Fine-tune网络/">cs231n-(9)迁移学习和Fine-tune网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">cs231n-(8)理解和可视化卷积网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/Python实现三层神经网络/">Python实现三层神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">cs231n-(5)神经网络-3：学习和评估</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2017 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>《Deep Learning》(4)-数值计算 | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="机器学习算法常常需要大量的数学计算，尤其是一些需要迭代求解的算法。优化算法和解线性方程时，当这些函数涉及到实数操作时，就要在数值精度和内存两者之间做权衡了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Deep Learning》(4)-数值计算">
+<meta property="og:url" content="http://kangbing.github.io/2016/09/06/《Deep Learning》(4)-数值计算/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="机器学习算法常常需要大量的数学计算，尤其是一些需要迭代求解的算法。优化算法和解线性方程时，当这些函数涉及到实数操作时，就要在数值精度和内存两者之间做权衡了。">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/deeplearning04_01.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/deeplearning04_02.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/deeplearning04_03.jpg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/deeplearning04_04.jpg">
+<meta property="og:updated_time" content="2016-09-15T15:49:58.783Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Deep Learning》(4)-数值计算">
+<meta name="twitter:description" content="机器学习算法常常需要大量的数学计算，尤其是一些需要迭代求解的算法。优化算法和解线性方程时，当这些函数涉及到实数操作时，就要在数值精度和内存两者之间做权衡了。">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/BatchNorm/" style="font-size: 10px;">BatchNorm</a> <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Depthwise/" style="font-size: 10px;">Depthwise</a> <a href="/tags/Ensembles/" style="font-size: 10px;">Ensembles</a> <a href="/tags/Inception/" style="font-size: 12.5px;">Inception</a> <a href="/tags/Inception-V3/" style="font-size: 10px;">Inception-V3</a> <a href="/tags/Inception-V4/" style="font-size: 10px;">Inception-V4</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/ParameterServer/" style="font-size: 10px;">ParameterServer</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/R-CNN/" style="font-size: 10px;">R-CNN</a> <a href="/tags/Residual/" style="font-size: 12.5px;">Residual</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/SPP-net/" style="font-size: 10px;">SPP-net</a> <a href="/tags/Xavier/" style="font-size: 10px;">Xavier</a> <a href="/tags/Xception/" style="font-size: 10px;">Xception</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 17.5px;">cs231n</a> <a href="/tags/feature/" style="font-size: 10px;">feature</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 15px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-《Deep Learning》(4)-数值计算" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/09/06/《Deep Learning》(4)-数值计算/" class="article-date">
+      <time datetime="2016-09-06T15:19:06.000Z" itemprop="datePublished">2016-09-06</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      《Deep Learning》(4)-数值计算
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/《Deep-Learning》笔记/">《Deep Learning》笔记</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数值计算/">数值计算</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>机器学习算法常常需要大量的数学计算，尤其是一些需要迭代求解的算法。<br>优化算法和解线性方程时，当这些函数涉及到实数操作时，就要在数值精度和内存两者之间做权衡了。</p>
+<ul>
+<li><a id="more"></a>
+</li>
+</ul>
+<h2 id="4-1_上溢出和下溢出（Overflow_and_Underflow）">4.1 上溢出和下溢出（Overflow and Underflow）</h2><p>使用数字计算机表示连续变量时，需要用有限的bit来表示无限的实数。这意味着，对于大部分的实数，有精度上的损失。这样的误差叫做<em>舍入误差</em>。舍入误差包括Underflow和Overflow。</p>
+<p>Underflow:当数值接近0时，被舍入为0。<br>Overflow:当数值逼近正负无穷时，数值变为Not-A-Number（NAN）。</p>
+<p>Softmax函数就一个要同时处理Unverflow和Overflow的函数<br>
+$$
+\text {softmax }(x)_i=\frac{\exp(x_i)}{\sum_{j=1}^{n}\exp (x_j)}
+$$
+<br>假设$x_i$为常数$c$，这时函数应该为$\frac{1}{n}$。当$c$为负且很大时，这时会出现Underflow；当$c$为正且很大时，竟会出现Overflow。用线性代数处理一下$z=x-\max(x_i)$，再求$\text {softmax}(z)$即可。</p>
+<p>还有一个小的问题。分子的underflow可能会导致整个表达式为零。即，如果首先计算softmax函数，然后把结果传递给log函数，可能会得到$-\infty$。可以使用同样方法避免这个问题。</p>
+<p>在使用算法时，可能不会考虑溢出问题，因为一些底层库的作者常常已经处理好这个问题了。当时，要时刻意识到这个问题。</p>
+<h2 id="4-2_Poor_Conditioning">4.2 Poor Conditioning</h2><p>Condition是指函数输入变化时，它的输出变化的快慢。输入微小变化就能引起输出很大波动的的函数，对于科学计算来说，有问题。因为数据可能存在噪声（或预处理存在噪声），噪声很大程度影响了输出。</p>
+<p>例如函数$f(x)=A^{-1}x$，其中$A \in R^{n \times n}$，且有特征值，那么它的condition number 就是<br>
+$$
+\max_{i,j}\frac{\lambda_i}{\lambda_j}
+$$
+<br>这个比值就是幅度最大的特征值和幅度最小的特征值的比值。如果比值很大，那么矩阵的逆对输入就很敏感。</p>
+<p>这种敏感是矩阵本身的特性，而不是求逆过程中的误差。这样的矩阵会放大预处理的误差。</p>
+<h2 id="4-3梯度下降最优化">4.3梯度下降最优化</h2><p>大多数机器学习都会涉及到最优化；最优化是指最大化$f(x)$或最小化$-f(x)$。要最大化或最小化的函数叫做目标函数或准则；如果最小化它时，常常叫做代价函数、损失函数或误差函数。</p>
+<p>最下滑函数，常常使用梯度下降法。但是在梯度为零的点，梯度没有为我们提供信息。梯度为零$f^{‘}(x)$的点，是关键点或驻点（critical points or stationary point）。梯度为零的点，可以是局部最小值，或者是局部最大值，也可能是鞍点(saddle point)。如下图：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/deeplearning04_01.jpg" alt="deeplearnging04_01.jpeg"></p>
+<p>局部最小值可能不是全局最小值，全局最小才是最优。在深度学习中，优化的函数有许多局部最小值和鞍点；尤其是当优化目标函数为多维函数时。下图是一维情况的简单描述：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/deeplearning04_02.jpg" alt="deeplearnging04_02.jpeg"></p>
+<p>我们优化的函数，输入可能是多维的，但输入是一维的：$f:R^n \to R$。输入是多维时，对某一维变量求导就是偏导了$\frac{\partial}{\partial x_i}f(x)$。对函数就到得到的梯度就是一个向量了$\nabla_x f(x)$，其中每一个元素都是偏导。</p>
+<p>在某个方向$u$（向量）上的导数为$\frac{\partial}{\partial \alpha} f(x + \alpha u) =u^T \nabla_x f(x)$。</p>
+<p>最小化$f$就是找到一个方向，在这个方向上下降最快。实际上，梯度是上升最快的方向，其反方向就是下降最快的方向。沿着梯度反方向下降的方法，叫做最速下降法（steepest descent）或梯度下降（gradient descent）。</p>
+<p>最速下降法使用如下：<br>
+$$
+x^{'} = x - \epsilon \nabla_x f(x)
+$$
+<br>这里$\epsilon$叫做学习率，它指示在下降过程中的步长，可以设置不同的值。最流行的做法是把它设置为常数。有时，还用通过设置步长，防止梯度消失。还有一种设置步长的方法，通过计算不同$\epsilon$时，目标函数$f(x - \epsilon \nabla_x f(x))$的大小，来选择最优的学习率；这种策略叫做线性搜索。</p>
+<p>梯度下降只能用在连续空间。但是其思想：通过一步步移动，找到最优点，可以用到离散空间。</p>
+<h3 id="4-3-1_Beyond_the_Gradient:雅克比矩阵和海森矩阵">4.3.1 Beyond the Gradient:雅克比矩阵和海森矩阵</h3><p>对于输入和输出都是多维情况，这时求其偏导，可以得到雅克比矩阵（Jacobian Matrices）。函数$f:R^m \to R^n$，那么雅克比矩阵$J \in R^{n \times m}$，矩阵中的每个变量<br>
+$$
+J_{i,j} = \frac{\partial}{\partial x_j}f(x)_i
+$$
+<br>对于函数$f:R^n \to R$，求它导数的导数，即二阶导数，可以得到海森矩阵。二阶导数告诉我们一阶导数随输入变量变化而变化的情况。二阶导数很重要，它可以告诉我们基于一阶导数梯度步长，将会引起多大提高。可以把二阶导数想象为衡量弯曲。例如，有一个二次函数，如果它二阶导数为零，那么它是一条直线，没有弯曲。假设梯度为1,如果二阶导数为负，那么其开口向下，函数$f(x)$下降幅度大于$\epsilon$；如果二阶导数为正，那么其下降小于步长。如下图：</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/deeplearning04_03.jpg" alt="deeplearning04_03.jpg"></p>
+<p>二阶导数定义的矩阵，叫做海森矩阵：<br>
+$$
+H(f)(f)_{i,j}=\frac{\partial^2}{\partial x_i \partial x_j}f(x)
+$$
+<br>求导符合交换律，即：<br>
+$$
+H(f)(f)_{i,j}=\frac{\partial^2}{\partial x_j \partial x_i}f(x)
+$$
+<br>即海森矩阵是对称矩阵$H<em>{i,j} = H</em>{j,i}$。海森矩阵是对称的实数矩阵，可以分解为特征值和特征向量，且特征值为实数。二阶微分，在某一方向$d$表示为$d^THd$，其中$d$是$H$的单位特征向量，在此方向上的值为特征向量对应的特征值。对于其他的方向，是单位特征向量的加权和。最大的特征值对应最大二阶导数，最小特征值对应最小二阶导数。</p>
+<p>二阶导数的方向可以告诉我们梯度下降算法下降的幅度。用二阶泰勒级数在$x^{(0)}$处展开目标函数可以得到:<br>
+$$
+f(x) \approx f(x^{(0)}) + (x - x^{(0)})^Tg+\frac{1}{2}(x-x^{(0)})^T H(x-x^{(0)})（x-x^{(0)}）
+$$
+<br>这里$g$是梯度，$H$是海森矩阵。如果学习率为$\epsilon$是学习率用$x^{(0)} - \epsilon g$代替$x$，可以得到：<br>
+$$
+f(x^{(0)} - \epsilon g) \approx f(x^{(0)}) - \epsilon g^Tg + \frac{1}{2}\epsilon^2 g^THg
+$$
+<br>使用梯度下降算法，步长为 $\epsilon$时，下降大小为$- \epsilon g^Tg + \frac{1}{2}\epsilon^2 g^THg$。当后面一项比较大时，目标函数可能没有变小；当$g^THg$为负数或为零时，学习率为任何值，都会下降。在使用泰勒级数时，如果$\epsilon$比较大时，二项展开精度可能就不高。如果$g^THg$为正数，那么最佳学习率为<br>
+$$
+\epsilon^* = \frac{g^Tg}{g^THg}
+$$
+<br>最坏情况下，当$g$和$H$的最大特征值对应的特征向量平行时，最佳步长为$\frac{1}{\lambda_{max}}$</p>
+<p>二阶导数可以判断关键是是局部最小、局部最大、鞍点。关键点处$f^{‘}(x)=0$；如果$f^{‘’}(x)&gt; 0$，意味着如果$f^{‘}(x)$向右移动大于零，向左移动小于零，即$f^{‘}(x-\epsilon)&lt;0, f^{‘}(x+\epsilon)&gt;0$f^{‘}(x-\epsilon)&lt;0f^{‘}(x-\epsilon)&lt;0f^{‘}(x-\epsilon)&lt;0,可以得到此处为局部最小值。同理当$f^{‘}(x) = 0, f^{‘’}(x) &lt; 0$时，此处为局部最大值。当$f^{‘}(x) = 0, f^{‘’}(x) = 0$，这时不能得到确切的结论，此时$x$可能为鞍点，或一段平坦区域。</p>
+<p>对于多维情况，同一点不同方向导数不同。海森矩阵的condition number衡量二阶导数变化情况，如果海森矩阵的condition number是poor的，那么梯度下降性能不好。因为在某一点的一个方向，梯度可能下降很快，但是在另一个方向，梯度下降很慢；这时很难选择一个全局的学习率。如下图所示：</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/deeplearning04_04.jpg" alt="deeplearning04_04.jpg"><br>在上图中，方向[1,1]上的弯曲率最大，方向[1,-1]上的弯曲率最小。红色的线是梯度下降时，行走的路线。可以看到，来回走动，浪费很多步。</p>
+<p>可以使用从海森矩阵中得到的信息来指导搜索。最简单的方法是牛顿法。牛顿法是基于二阶导数的泰勒展开的：<br>
+$$
+f(x) \approx f(x^{(0)}) + (x - x^{(0)})^Tg+\frac{1}{2}(x-x^{(0)})^T H(x-x^{(0)})（x-x^{(0)}）
+$$
+<br>对于关键点，求解函数，得到<br>
+$$
+x^* = x^{(0)} - H(f)(x^{(0)})^{-1} \nabla_x f(x^{(0)})
+$$
+<br>当函数$f$是二次时，只需要一步即可跳到最优解。当函数不是正定的，但是可以近似为二次正定的，可以迭代使用上面公式，这样比梯度下降法要快。这在局部最小值附近时是个有用的特性，但是牛顿法只能在局部最小值附近来近似。</p>
+<p>梯度下降是一阶导数的优化算法，牛顿法是二阶导数的最优化算法。这些最优化算法可以用到大多数的深度学习应用中，但是不确保一定有效。因为深度学习中，用到的函数十分复杂。有时需要给函数加上Lipschitz连续限制。Lipschitz连续函数为：<br>
+$$
+\forall x, \forall y, |f(x) - f(y)| \leq \varsigma ||x-y||_2
+$$
+<br>其中$\varsigma$是Lipschitz限制。这时一个很有用的特性，因为输入上的微小变量，将会引起输出上的微小变化。Lipschitz限制是一个弱限制，深度学习中的许多问题可以经过微小修改获取Lipschitz连续性。</p>
+<p>在优化领域，最成功的领域是凸优化。凸优化通过许多强限制来加以保证。凸优化只能用来解决凸函数，海森矩阵为半正定的函数才是凸函数；这样的函数没有鞍点，局部最小值即为全局最小值。但是深度学习中，目标函数往往不是凸函数。凸函数优化只能用作深度学习的一个分支。</p>
+<h2 id="4-4_受限的优化问题">4.4 受限的优化问题</h2><p>有时我们要在限制输入满足$x$一定条件情况来，来最小化目标函数。这就是受限的优化问题。</p>
+<p>常常用的一种方法是把受限条件考虑到目标函数中，然后再来优化新的目标函数。</p>
+<p>一种复杂的方法，是把受限问题转换为不受限的问题来解决。</p>
+<p>Karush-Kuhn-Tucker(KKT)方法提供了解决受限问题的一种通用方法。这里介绍一种新的方法，拉格朗日乘子法或拉格朗日函数。</p>
+<p>在定义拉格朗日函数前，先定义受限集合的描述，假设受限约束有m个等式和n个不等式描述。受限集合$S={x|\forall i,g^{(i)}=0 \quad \text{and} \forall j, h^{(j)} \leq 0}$。为每个约束引入新的变量$\lambda_i, \alpha_j$，它们叫做KKT乘子，拉格朗日函数定义如下：<br>
+$$
+L(x, \lambda, \alpha) = f(x) + \sum_i \lambda_i g^{(i)}(x) + \sum_j \alpha_j h^{(j)}(x)
+$$
+<br>这样就可以用不受限的优化问题解决受限的优化问题。注意到只有存在可行点，那么$f(x)$就不能有无穷大值点，那么<br>
+$$
+\min_{x} \max_{\lambda} \max_{\alpha, \alpha \geq 0} L(x, \lambda, \alpha)
+$$
+<br>和<br>
+$$
+\min_{x \in S}f(x)
+$$
+<br>有相同的优化目标和结果集。这时因为满足<br>
+$$
+\max_{\lambda} \max_{\alpha, \alpha \geq 0} L(x, \lambda, \alpha) = f(x)
+$$
+<br>违反<br>
+$$
+\max_{\lambda} \max_{\alpha, \alpha \geq 0} L(x, \lambda, \alpha) = \infty
+$$
+<br>这条性质确保在可行性点不变情况下，非可行性点不会得到优化。</p>
+<p>不等式的约束很有趣。如果$h^{(i)}(x^*)=0$，那么这个不等式就是激活的。否则，这个不等式就是没有激活的。如果一个约束没有激活，那么使用这个约束得到的解，至少是不使用这个约束时，问题的局部解。没有激活的约束也会排除一些解。例如一个凸优化问题，没有约束时，它的解的范围是全局任何点；也可以使用一些约束把它解的范围约束到一个集合范围内。但是在收敛处的点，不管约束有没有激活，它都是个stationary point。因为没有激活的约束$h^{(i)}$是负值，那么对于变形后的目标函数$\min<em>{x} \max</em>{\lambda} \max_{\alpha, \alpha \geq 0} L(x, \lambda, \alpha)$，将会有$\alpha_i=0$，因此可以得到$\alpha h(x)=0$，即约束$\alpha_i \geq 0$和$h^{(i)}(x) \leq 0$中，至少有一个是激活的。</p>
+<p>泛化后的拉格朗日梯度为零，对于$x$约束和KKT乘数都必须满足，且$\alpha \odot h(x)=0$，这些约束叫做KKT条件。</p>
+<h2 id="4-5例子：线性最小平方">4.5例子：线性最小平方</h2><p>要最小化下面目标函数<br>
+$$
+f(x) = \frac{1}{2}||Ax-b||_2^2
+$$
+<br>第一步，求得梯度<br>
+$$
+\nabla_x f(x) = A^T(Ax-b)=A^TAx-A^Tb
+$$
+<br>使用梯度下降，按照以下步骤</p>
+<p>1、设置步长和容忍方差$\delta$<br>$\text {while} \quad ||A^TAx-A^Tb||_2 &gt; \delta \quad do$<br> $\quad x \leftarrow x - \epsilon (A^TAx-A^Tb)$<br>$\text{end while}$</p>
+<p>也可以使用牛顿法求解，因为函数是二次的，可以一步得到全局最优解。</p>
+<p>如果给输入加上约束$x^Tx \leq 1$，得到拉格朗日函数<br>
+$$
+L(x,\lambda) = f(x) + \lambda(x^Tx-1)
+$$
+<br>有约束问题变为无约束问题<br>
+$$
+\min_x \max_{\lambda, \lambda \geq 0} L(x,\lambda)
+$$
+<br>朗格朗日函数对$x$求导，得到<br>
+$$
+A^TAx - A^Tb + 2 \lambda x = 0
+$$
+<br>得到的解的形式为：<br>
+$$
+x = (A^TA+2\lambda I)^{-1}A^T b
+$$
+<br>$\lambda$幅度必须满足约束。对它求导<br>
+$$
+\frac{\partial}{\partial \lambda}L(x,\lambda)=x^T x -1
+$$
+<br>当$x$范数大于1时，上面导数为正；增大$\lambda$拉格朗日函数值随之增大。因为$x^Tx$的系数增大，所以$x^Tx$将会变小（因为我们在最小化朗格朗日函数）。如此重复，直到$\lambda$导数为零。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2016年09月06日 - 23时19分</p>
+        <p><span>最后更新:</span>2016年09月15日 - 23时49分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/09/06/《Deep Learning》(4)-数值计算/" title="《Deep Learning》(4)-数值计算">http://kangbing.github.io/2016/09/06/《Deep Learning》(4)-数值计算/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2016/09/06/《Deep Learning》(4)-数值计算/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">
+                    cs231n-(5)神经网络-2：设置数据和Loss
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">
+                    《Deep Learning》(3)-概率和信息论
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1_上溢出和下溢出（Overflow_and_Underflow）"><span class="toc-number">1.</span> <span class="toc-text">4.1 上溢出和下溢出（Overflow and Underflow）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2_Poor_Conditioning"><span class="toc-number">2.</span> <span class="toc-text">4.2 Poor Conditioning</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3梯度下降最优化"><span class="toc-number">3.</span> <span class="toc-text">4.3梯度下降最优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-1_Beyond_the_Gradient:雅克比矩阵和海森矩阵"><span class="toc-number">3.1.</span> <span class="toc-text">4.3.1 Beyond the Gradient:雅克比矩阵和海森矩阵</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-4_受限的优化问题"><span class="toc-number">4.</span> <span class="toc-text">4.4 受限的优化问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-5例子：线性最小平方"><span class="toc-number">5.</span> <span class="toc-text">4.5例子：线性最小平方</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+        <section class="youyan" id="comments">
+  <div id="uyan_frame"></div>
+  <script src="http://v2.uyan.cc/code/uyan.js?uid=2136539"></script>
+</section>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/" title="上一篇: cs231n-(5)神经网络-2：设置数据和Loss">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/09/06/《Deep Learning》(3)-概率和信息论/" title="下一篇: 《Deep Learning》(3)-概率和信息论">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/06/25/MXNet/MXNet Data IO/">MXNet Data IO</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/14/MXNet/PS-Lite源码分析/">PS-Lite源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/26/Paper笔记/00010_Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition/">Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">Rich feature hierarchies for accurate object detection and semantic segmentation</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">Xception--Deep Learning with Depthwise Separable Convolutios</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">Residual Networks Behave Like Ensembles of Relatively Shallow Networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/Paper笔记/0003_Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift/">Batch Normalization--Accelerating Deep Network Training by Reducing Internal Covariate Shift</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/11/Paper笔记/0002_Understanding the difficulty of training deep feedforward neural networks/">Understanding the difficulty of training deep feedforward neural networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/22/Paper笔记/0001_ILSVRC历届冠军论文笔记/">ILSVRC历届冠军论文笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(9)迁移学习和Fine-tune网络/">cs231n-(9)迁移学习和Fine-tune网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">cs231n-(8)理解和可视化卷积网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/Python实现三层神经网络/">Python实现三层神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">cs231n-(5)神经网络-3：学习和评估</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2017 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

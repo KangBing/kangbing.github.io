@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>cs231n-(7)卷积神经网络：架构，卷积层/池化层 | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="讲解网络的各种层">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cs231n-(7)卷积神经网络：架构，卷积层/池化层">
+<meta property="og:url" content="http://kangbing.github.io/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="讲解网络的各种层">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_01.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_02.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_03.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_04.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_05.jpeg">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_06.gif">
+<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_06.jpeg">
+<meta property="og:updated_time" content="2017-04-12T14:50:14.093Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cs231n-(7)卷积神经网络：架构，卷积层/池化层">
+<meta name="twitter:description" content="讲解网络的各种层">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/BatchNorm/" style="font-size: 10px;">BatchNorm</a> <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Depthwise/" style="font-size: 10px;">Depthwise</a> <a href="/tags/Ensembles/" style="font-size: 10px;">Ensembles</a> <a href="/tags/Inception/" style="font-size: 12.5px;">Inception</a> <a href="/tags/Inception-V3/" style="font-size: 10px;">Inception-V3</a> <a href="/tags/Inception-V4/" style="font-size: 10px;">Inception-V4</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/ParameterServer/" style="font-size: 10px;">ParameterServer</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/R-CNN/" style="font-size: 10px;">R-CNN</a> <a href="/tags/Residual/" style="font-size: 12.5px;">Residual</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/SPP-net/" style="font-size: 10px;">SPP-net</a> <a href="/tags/Xavier/" style="font-size: 10px;">Xavier</a> <a href="/tags/Xception/" style="font-size: 10px;">Xception</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 17.5px;">cs231n</a> <a href="/tags/feature/" style="font-size: 10px;">feature</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 15px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-cs231n-(7)卷积神经网络：架构，卷积层,池化层" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/" class="article-date">
+      <time datetime="2017-02-18T13:51:12.000Z" itemprop="datePublished">2017-02-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cs231n-(7)卷积神经网络：架构，卷积层/池化层
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/cs231n笔记/">cs231n笔记</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs231n/">cs231n</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/神经网络/">神经网络</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>讲解网络的各种层</p>
+<ul>
+<li><a id="more"></a>
+</li>
+</ul>
+<p>卷积神经网络和普通神经网络非常类似。卷积神经网络由神经元组成，每个神经元包含权重weight和谝置bias；它接收上一层输入，和权重相乘，通常再经过一个非线性函数（可选）输出。整个网络拟合一个可微分的score function:从原始图像到每类别得分。在最后一层（全连接层）包含一个loss function（例如SVM/Softmax），常规神经网络用到的技巧，卷积神经网络通常也适用。</p>
+<h2 id="架构总览">架构总览</h2><p>上一节用到的网络是全连接网络，它接收一个向量输入，得到每个类别的得分。全卷积网络不太适用于图像，在CIFAR-10中，图像大小是32x32x3，所以第一层网络的每个神经元将会有32<em>32</em>3=3072个权重；当输入图像变大后，权重数量会以乘积形式增长；神经元的数量不止一个，这么多的权重，将会导致过拟合。</p>
+<p>3维神经元。图像由三个维度组成：<strong>width、height、channel</strong>，因此“层”也是对应三维：<strong>width、height、depth</strong>，这里的depth是激活函数的维度，不是神经网络的depth。</p>
+<p>卷积神经网络和全连接网络的不同在于，卷积神经网络只是用全一层的部分输出作为一个神经元的输入，这样可以大大减少权重个数。下面是可视化的一个对比：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_01.jpeg" alt="cs231n08_01.jpeg"></p>
+<p>左边是3层的全连接网络。右边是卷积神经网络，把神经元按照三维来组织的。</p>
+<h3 id="常用的层">常用的层</h3><p>卷积神经网络由层构成，每层有简单的接口：把输入的三维数据转换为输出的三维数据，通常使用可微函数或者不用参数。</p>
+<p>卷积网络由一系列的层构成，数据在层之间流动。常用到的层包括：<strong>卷基层Convolutional Layer、池化层Pooling Layer、全连接层Fully-Connected Layer</strong>。</p>
+<p>以一个分类CIFAR-10图像的卷积网络为例，网络结构[INPUT-CONV-RELU-POOL-FC]，具体如下：</p>
+<ul>
+<li><p>INPUT[32x32x3]，数据为原始像素值，高宽都为32，三通道RGB。</p>
+</li>
+<li><p>CONV layer，卷积层计算对象连接到输入层神经元的输出，每次计算都是权重和局部输入的点乘。如果使用12个滤波器（核），输出为[32x32x12]。</p>
+</li>
+<li><p>RELU layer，ReLU是逐元素操作（elementwise），使用函数$max(0,x)$，经过ReLU后，输出大小不会变，还是[32x32x3]。</p>
+</li>
+<li><p>POOL layer，池化层是下采样操作（在宽weight和高height纬度上），这样输出会变小为[16x16x12]，但是depth不变。</p>
+</li>
+<li><p>FC layer全连接层将会计算每类别对应的得分，输出大小为[1x1x10]，代表10类每个类别的得分。全连接顾名思义，这一层的每个神经元和上一层的每个神经元之间都有连接。</p>
+</li>
+</ul>
+<p>通过上面的网络，把原始像素值通过不同的层，最终得到每个类别的得分。上面的层中，卷积层和全连接层有参数，池化层没有传参数，训练是训练有参数的层。</p>
+<p>总结：</p>
+<ul>
+<li>卷积网络最简单的结构就是一系列的层的连接，把输入的图像转换为输出。</li>
+<li>有不同类型的层，最常用的有CONV/FC/RELU/POOL。</li>
+<li>每个层都是接收三维数据，之后通过一个可微函数转换成一个三维输出。</li>
+<li>层可以包含参数，也可以不包含。</li>
+<li>层可以包含超参数，也可以不包含。</li>
+</ul>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_02.jpeg" alt="cs231n08_02.jpeg"></p>
+<p>上图就是一个卷积网络的可视化，因为对三维数据难以可视化，对三维数据通过行来切片平铺展示，最后一层是对应每类的得分。这个网络是tiny VGG NET。</p>
+<p>下面详细介绍每种类别的层的结构。</p>
+<h3 id="卷积层">卷积层</h3><p>卷积层是卷积网络的核心，大部分的计算量都在这个层。</p>
+<h4 id="概述">概述</h4><p>不考虑和大脑、神经元做对比，卷积层参数包含要学习参数的一个集合。每个滤波器参数长度和宽度比较小，但是深度和输入数据保持一致。在前向传播过程中，把卷积核沿着输入数据在宽和高上滑动，把对应的数据和卷积核做内积运算；随着卷积核的滑动，可以得到一个2维的激活图（activation map），激活图的值是卷积核在不同空间位置的响应。直观上看，网络会让卷积核学到“对某些特定物体或颜色产生激活”。假设我们有一个卷积核的集合，每个卷积核都会生成一个2维激活图，多个卷积核就可以在深度方向上得到输出。</p>
+<p><strong>大脑角度</strong>，从大脑角度看，每个3维输出可以看做一个神经元的输出，每个神经元只是观察到了输入数据的一部分，在空间上和左右两边的神经元进行参数共享。</p>
+<p><strong>局部连接</strong>，每个神经元只跟前一层输入的一个局部区域相连接；这个局部区域大型是一个超参数，叫做<strong>感受视野receptive field</strong>，其大小就是卷积核大小，其深度和输入数据深度一致。</p>
+<p>例如，对于RGB CIFAR-10的图像，如果感受视野（卷积核/滤波器）大小为5x5，那么权重大小为[5x5x3]，总共有参数5<em>5</em>3+1=76个（加上一个bias）。</p>
+<p>如果输入数据大小为[16x16x20]，感受视野（卷积核）3x3，那么权重为[3x3x20]。</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_03.jpeg" alt="cs231n08_03.jpeg"><br>左图是32x32x3(CIFAR-10)的一个输入，卷积核只是连接到输入的局部部分，但是扩展到输入的整个深度。右边是一个神经元，它计算输入数据和权重的内积，再加上一个bias；随后经过一个非线性函数。</p>
+<p><strong>空间安排</strong>，前面已经解释了输入数据如何跟输出进行连接，但是还没讨论神经元的数量以及它们之间如何排列，这里需要用到三个超参数:<strong>深度depth，步长stride，零填充zero-padding</strong>：</p>
+<p>1、输出的深度对应卷积核的个数，不同的卷积核查找输入中不同的物体。例如，输入是原始图像，那么深度方向上不同神经元可能被颜色、边缘、特定形状所激活。沿着深度方向上排列的叫做<strong>深度列depth column</strong>。</p>
+<p>2、步长是卷积核滑动的距离，例如stride=1表示滑动一个像素；stride=2卷积核会滑动2个像素，这样得到的输出width和height会比输入小。</p>
+<p>3、有时候，在输入的边缘上填充0会给计算带来方便，这种操作叫做<strong>零填充zero-padding</strong>。零填充的大小也是一个超参数，其大小会影响输出在空间上的大小（常常用来填充，使得输入和输入的width和height大小一致）</p>
+<p>计算输出在空间的大小，输入的size为<strong>W</strong>，卷积核size为<strong>F</strong>，步长为<strong>S</strong>，零填充为<strong>P</strong>，那么输出的size为<strong>（W - F + 2P）/ S +　１</strong>。例如输入为7x7，卷积核3x3，零填充为0，步长为1，那么输入大小为5x5；如果步长为2，那么输出大小为3x3。</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_04.jpeg" alt="cs231n08_04.jpeg"><br>上图是沿着某一维度的例子，输入是7x7，卷积核是3x3（最右边），bias为零；左边stride=1，中间stride=2。注意<strong>（W - F + 2P）/ S</strong>一点要可以整除。</p>
+<p>权重在同一个输入的激活图上，是共享的。</p>
+<p>零填充的使用：上面的例子中，输出的size比输入小，如果使用零填充<strong>P = (F - 1)/2</strong>，那么输出和输出size大小将一致。</p>
+<p>步长的限制：超参数有一些限制。例如，<strong>W = 10, P = 10, F = 3</strong>，那么步长<strong>S = 2</strong>就不合适，因为<strong>(W - F + 2P)/S + 1 = (10 − 3 + 0) / 2 + 1 = 4.5</strong>，不是整数，这将导致神经元不能整齐滑过输入数据。这样的参数被认为是无效的。卷积网络库可能会报异常，或者通过零填充/裁剪来使大小合理。</p>
+<p>实际例子：AlexNet输入大小为[227x227x3]，第一个卷积层<strong>F=11,S=4,P=0</strong>，(227-11)/4+1=55，第一个卷积层depth<strong>K=96</strong>，所有共有96个卷积核，每个卷积核[11x11x3]。</p>
+<p><strong>参数共享</strong>，参数共享可以减少参数个数。以AlexNet第一个卷积层为例，共有神经元55<em>55</em>96=290,400，如果不适用参数共享，每个神经元有11<em>11</em>3=363个权重和1个bias，共有参数290400*364=105,705,600 个。</p>
+<p>可以基于几个假设来减少参数：如果计算位置(x,y)处的某一特征的卷积核，应该可以计算不同位置(x2,y2)处的相同特征，所以可以使用同一个卷积核。即可以在深度方向上做一个2维切片（<strong>depth slice</strong>），每个切片使用相同权重。这样AlexNet第一层就有96<em>11</em>11*3=34,848个权重和96个bias。在反向传播时，要计算每个神经元都权重的梯度，这样要在一个深度切片上进行累加，更新时，单独更新每一个深度切片对应的权重。</p>
+<p>注意，如果在一个深度切片上使用相同的权重，那么前向传播就是输入数据和权重的卷积运算（卷积层名字的由来），这也是为什么称权重为滤波器或卷积核。</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_05.jpeg" alt="cs231n08_05.jpeg"></p>
+<p>上图是AlexNet第一个卷积层权重[11x11x3]的可视化，对应96个不同卷积核，每个权重用来计算[55x55]个神经元。注意到参数共享是合理的：如果检测某一位置水平方向边界很重要，那么也应该适用于其他地方，因为具有平移不变性。因此没有必要再学习一个检测水平边界的卷积核了。</p>
+<p>有时参数共享假设并没有意义。例如输入图像有明确的中心结构，这时我们希望在不同位置学习到不同特征。一个典型的例子就是人脸检测，人脸就位于图像中心位置，其他位置可能学到眼睛或头发特征；这种情况，就需要放松参数共享的限制，称这样的层叫做<strong>局部连接层Locallly-Connected Layer</strong>。</p>
+<p><strong>Numpy example</strong>，下面使用Numpy一个具体例子来说明，假设Numpy数组为<code>X</code>，</p>
+<ul>
+<li>在深度上的某一列位置<code>(x,y)</code>，表示为<code>X[x,y,:]</code>。</li>
+<li>在深度<code>d</code>上的一个切片，表示为<code>X[:,:,d]</code>。</li>
+</ul>
+<p>假设输入<code>X</code>的形状<code>X.shape:(11,11,4)</code>。零填充<strong>P=0</strong>，滤波器核<strong>F=5</strong>，步长<strong>S=2</strong>，输出size为(11-5)/2+1=4,输出用<code>V</code>来表示：</p>
+<ul>
+<li><code>V[0,0,0] = np.sum(X[:5,:5,:] * W0) + b0</code></li>
+<li><code>V[1,0,0] = np.sum(X[2:7,:5,:] * W0) + b0</code></li>
+<li><code>V[2,0,0] = np.sum(X[4:9,:5,:] * W0) + b0</code></li>
+<li><code>V[3,0,0] = np.sum(X[6:11,:5,:] * W0) + b0</code></li>
+</ul>
+<p>其中，<code>*</code>表示逐个元素相乘，<code>W0</code>表示权重，<code>b0</code>表示偏置bias，<code>W0</code>大小<code>W0.shape:(5,5,4)</code>，5表示卷积核大小，4表示深度。计算在同一个深度切片时，使用的是同一个权重和bias，这就是参数共享。第二个特征图计算：</p>
+<ul>
+<li><code>V[0,0,1] = np.sum(X[:5,:5,:] * W1) + b1</code></li>
+<li><code>V[1,0,1] = np.sum(X[2:7,:5,:] * W1) + b1</code></li>
+<li><code>V[2,0,1] = np.sum(X[4:9,:5,:] * W1) + b1</code></li>
+<li><code>V[3,0,1] = np.sum(X[6:11,:5,:] * W1) + b1</code></li>
+<li><code>V[0,1,1] = np.sum(X[:5,2:7,:] * W1) + b1</code></li>
+<li><code>V[2,3,1] = np.sum(X[4:9,6:11,:] * W1) + b1</code></li>
+</ul>
+<p>上面是计算第二个特征图的过程。计算特征图后，往往跟着非线性操作例如ReLU，这里没有展示。</p>
+<p><strong>总结</strong>：</p>
+<ul>
+<li>输入数据size:<strong>$W_1 \times H_1 \times D_1$</strong></li>
+<li>需要使用的超参数：<br>  1、卷积核个数$K$<br>  2、卷积核大小$F$<br>  3、步长$S$<br>  4、零填充大小$P$</li>
+<li>输出大小size为<strong>$W_2 \times H_2 \times D_2$</strong>，其中<br>  $W_2 = (W_1 - F + 2P)/S + 1$<br>  $H_2 = (H_1 - F + 2P)/S + 1$<br>  $D_2 = K$</li>
+<li><p>使用超参数共享，每个滤波器权重个数$F \cdot F \cdot D_1$，共有权重$(F \cdot F \cdot D_1) \cdot K$个，偏置$K$个。</p>
+</li>
+<li><p>输出中，在深度的第$d$个切片上（size为$W_2 \times H_2$），其结果是第$d$个卷积核与输入卷积的结果，卷积步长为$S$。</p>
+</li>
+</ul>
+<p>超参数的设置，习惯为$F = 3, S = 1, P = 1$。</p>
+<p><strong>卷积例子</strong><br>因为3维数据难以可视化，下面图中，每一行是深度上的一个切片，输入时蓝色，权重是红色，输出是绿色。输入size$W_1 = 5, H_1 = 5, D_1 = 3$，卷积层参数$K=2,F=3,S=2,P=1$，即有2个$3 \times 3$的卷积核，步长为2，零填充为$P=1$。下面是动态示意图：</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_06.gif" alt="cs231n08_06.gif"></p>
+<p><strong>以矩阵乘积方式实现</strong>：<br>卷积操作是输入的局部区域和卷积核的点乘，可以利用这一点用一个大矩阵相乘来实现：<br>1、使用<strong>im2col</strong>操作，把输入的局部区域当做一列，展开为一个大矩阵。例如输入[227x227x3]，卷积核[11x11x3]，步长为4；从输入中取出[11x11x3]大小的块展开为一个列向量，列向量大小为11<em>11</em>3=363。沿着步长为4来重复进行这个操作，在width和height方向分别迭代(227-11)/4+1=55次，共进行55*55=3025次。这样展开后矩阵<code>X_col</code>的size大小为[363x3025]，每一列是局部视野展开后的数据。注意局部视野有重叠，因此展开后的列可能会有重复。<br>2、卷积核的权重展开为行。例如96个[11x11x3]的卷积核，展开后的权重矩阵<code>W_row</code>大小为[96x363]。<br>3、卷积的结果为上面两个矩阵相乘<code>np.dot(W_row,X_col)</code>，相当于卷积核和感受视野的点乘。上面的例子中，得到结果为[96x3025]。<br>4、把得到的结果重新排列，正确的size为[55x55x96]。</p>
+<p>这个方法的缺点是占用了过多内存，因为<code>X_col</code>中的数据有重复；优点是可以高效实用矩阵乘法（使用BLAS接口）。这个思想同样适用于pooling操作。</p>
+<p><strong>反向传播</strong><br>卷积反向传播同样是卷积操作（对于数据和权重都是，但是在空间反转）。</p>
+<p><strong>1x1卷积</strong><br>论文<a href="http://arxiv.org/abs/1312.4400" target="_blank" rel="external">Network in Network</a>首次发明了1x1卷积，信号处理背景的人可能疑惑。通常信号是2维数据，1x1卷积没有意义（只是缩放）。但是在卷积网络中，数据是3维的，滤波器深度和输入数据深度相同。例如输入[32x32x3]，使用1x1卷积，是3维的点乘。</p>
+<p><strong>扩展卷积</strong><br><a href="https://arxiv.org/abs/1511.07122" target="_blank" rel="external">Fisher Yu and Vladlen Kultun的论文</a>引入了另外一个超参数叫做<code>扩张dilation</code>。前面我们讨论的卷积核是连续的，同样卷积核之间也可以有间隔。例如size为3的卷积核计算输入为<code>x</code>，<code>w[0]*x[0] + w[1]*x[1] + w[2]*x[2]</code>，这是dilation为0的情况；如果dilation为1，那么计算为<code>w[0]*x[0] + w[1]*x[2] + w[2]*x[4]</code>。扩张卷积核正常卷积结合非常有用，例如可以在很少的层中汇聚到大尺度特征。使用2个3x3卷积，第二个卷积对输入数据的感受视野为5x5。可以看出如果使用扩展卷积，感受视野将迅速增长。</p>
+<h3 id="池化层">池化层</h3><p>在卷积神经网络中，常常在连续卷积层中间隔插入池化层。池化操作可以减小数据量，从而减小参数，降低计算，因此防止过拟合。池化操作在每个深度切片上进行，例如使用MAX操作。常用的池化核实2x2大小，在每个深度切片的width和height方向下进行下采样，忽略掉75%（3/4）的激活信息。池化操作，保持深度depth大小不变。</p>
+<p>池化层配置：</p>
+<ul>
+<li>接收数据size <strong>$W_1 \times H_1 \times D_1$</strong></li>
+<li>需要参数<br>  1、池化核大小<strong>$F$</strong><br>  2、步长<strong>$S$</strong></li>
+<li><p>输出数据大小<strong>$W_2 \times H_2 \times D_2$</strong><br>  <strong>$W_2 = (W_1 - F) / S + 1$</strong><br>  <strong>$H_2 = (H_1 - F) / S + 1$</strong><br>  <strong>$D_2 = D_1$</strong></p>
+</li>
+<li><p>池化层没有参数。</p>
+</li>
+<li>注意，在池化层一般不会使用零填充。</li>
+</ul>
+<p>在实际使用中，最长见到的两种池化层配置：<strong>$F = 3, S = 2$</strong>（叫做重叠池化）；<strong>$F = 2, S = 2$</strong>，这个更常见。更大的池化核对网络有破坏性。</p>
+<p><strong>通用池化</strong><br>除了MAX池化操作外，还有平均池化核L2-norm池化。平均池化在历史上用的比较多，现在渐渐被遗弃，因为和MAX池化相比，MAX池化往往性能更好。</p>
+<p><img src="http://7xras4.com1.z0.glb.clouddn.com/cs231n08_06.jpeg" alt="cs231n08_06.jpeg"><br>上图就是池化过程。左图输入为[224x224x64]，池化核[2x2]，输出为[112x112x64]；右图为池化具体计算过程，使用的是MAX池化。</p>
+<p><strong>反向传播</strong><br>前面提到，对于max(x,y)的前向传播，只允许值大的通过；反向传播时只允许值大的输入的梯度反向传播。因此，池化层前向传播时记录下值大者的索引（有时叫做switches)，这样反向传播就很高效。</p>
+<p><strong>去掉池化</strong><br>有些人不喜欢池化操作，可以考虑去掉池化层。例如<a href="http://arxiv.org/abs/1412.6806" target="_blank" rel="external">Striving for Simplicity: The All Convolutional Net</a>中全是重复的卷积层。为了降低数据大小，使用了大的步长。为了训练一个好的生成网络，可以去掉池化层，例如自编码（VAEs）或生成对抗网络（GANs：generative adversarial networks）。在未来的架构中，不使用池化层的可能性比较小。</p>
+<h3 id="归一化层">归一化层</h3><p>归一化层(Normalization Layer)是根据对大脑观察原理得来的。实践中有很多类型归一化层，但它们基本没有什么效果，即使有也微乎其微。因此逐渐被放弃。想了解归一化层，可以参考<a href="https://code.google.com/p/cuda-convnet/wiki/LayerParams#Local_response_normalization_layer_(same_map" target="_blank" rel="external">cuda-convnet library API.</a>)</p>
+<h3 id="全连接层">全连接层</h3><p>如果一层的神经元和前一层的每个神经元都有连接，这样的层叫做全连接层。这样的层可以使用矩阵相乘再加上bias即可。</p>
+<h3 id="全连接层转为卷积层">全连接层转为卷积层</h3><p>全连接层和卷积层相似，卷积层的神经元和上一层输出局部区域相连接，使用了参数共享；因此它们之间可以相互转换。</p>
+<ul>
+<li><p>一个卷积层，可以用一个全连接层来替换；替换后权重矩阵非常大，且大部分为零（因为卷积只是局部连接），权重矩阵中很多块相同（因为参数共享）。</p>
+</li>
+<li><p>全连接层可以转换为卷积层。例如对于一个全连接层<strong>$K = 4096$</strong>,输入为<strong>$7 \times 7 \times 512$</strong>，可以转换为卷积层<strong>$F = 7, P = 0, S = 1, K = 4096$</strong>，即卷积核和输入大小相同，输出变为<strong>$1 \times 1 \times 4096$</strong>。</p>
+</li>
+</ul>
+<p><strong>FC-&gt;CONV</strong><br>在实践中，全连接层转换为卷积层更为有用。AlexNet输入为224x224x3，通过一系列卷积池化层，得到7x7x512输出(224/2/2/2/2/2=7)，之后通过2个大小为4096的全连接层，最后通过1000个神经元的全连接层计算出每类别的得分。可以替换掉3个全连接层为3个卷积层：</p>
+<ul>
+<li>替换掉第一个全连接层，其输入为[7x7x512]，替换用的卷积核$F = 7$，输出为[1x1x4096]。</li>
+<li>替换掉第二个全连接层，其输入为[1x1x4096]，替换用的卷积核$F = 1$，输出为[1x1x4096]。</li>
+<li>替换掉第三个全连接层，其输入为[1x1x4096]，替换用的卷积核$F = 1$，输出为[1x1x1000]。</li>
+</ul>
+<p>上面这些转换操作，涉及到重塑（例如reshape）权重矩阵$W$。这样在单一前向传播中，可以更高效；因为当输入图像比较大时，可以沿着额外空间滑动。</p>
+<p>例如AlexNet[224x224x3]输入，输出[7x7x512]，长和宽减小2x2x2x2x2=32倍；如果输入为[384x384x3]，那么输出为[12x12x512]，因为384/2/2/2/2/2=12。后面跟着的三个卷积层，最后得到输出为[6x6x1000]，因为(12 - 7) / 1 + 1 = 6。之前输出为[1x1x1000]对应一个类别一个得分，现在为结果为[6x6x1000]。不把全连接层替换为卷积层，输入为[384x384x3]，使用[224x224]窗口，步长为32滑动，得到6x6个[224x224x3]图像，最终结果也是[6x6x1000]。</p>
+<p>上面两种方法得到结果一样，显然前一种效率更高。这样的计算技巧在实践中常常使用；例如把小图像resize更大，使用转换后的卷积网络，计算多个位置得分，最终取平均值。</p>
+<p>如果我们想使用的步长小于32，可以使用多次前向传播。第一次使用原图前向传播；第二次使用步长16沿着宽和高平移，把平移后的图片输入到网络计算。</p>
+<ul>
+<li>IPython Notebook例子<a href="https://github.com/BVLC/caffe/blob/master/examples/net_surgery.ipynb" target="_blank" rel="external">Net Surgery</a>展示如何使用Caffe实践转换。</li>
+</ul>
+<h3 id="卷积网络架构">卷积网络架构</h3><p>卷积网络通常由CONV,POOL,FC三种类型的层组成，其中POOL默认为Max pool；RELU也显式指出。下面讨论怎么组合这些层。</p>
+<h4 id="层模式">层模式</h4><p>最常见的模式是连续几个CONV-RELU，后面跟着一个POOL；重复这样的结构几次，直到输出比较小，在某一位置使用FC。最后一个FC输出结果，例如类别得分。即常见的模式为：</p>
+<p><code>INPUT-&gt;[[CONV-&gt;RELU]*N]-&gt;POOL?]*M-&gt;[FC-&gt;RELU]*K-&gt;FC</code></p>
+<p>其中<code>*</code>表示重复，<code>POOL?</code>表示可选；一般<code>N &gt;= 0</code>（通常<code>N &lt;= 3</code>）, <code>M &gt;= 0</code>, <code>K &gt;= 0</code>(通常<code>K &lt; 3</code>)。例如一些常见的卷积网络架构模式如下：</p>
+<ul>
+<li><code>INPUT-&gt;FC</code>，实现的是一个线性分类器，这里<code>N=M=K=0</code>。</li>
+<li><code>INPUT-&gt;CONV-&gt;RELU-&gt;FC</code>。</li>
+<li>`INPUT-&gt;[CONV-&gt;RELU-&gt;POOL]*2-&gt;FC-&gt;RELU-&gt;FC，在每个CONV后面有一个POOL。</li>
+<li><code>INPUT-&gt;[CONV-&gt;RELU-&gt;CONV-&gt;RELU-&gt;POOL]*3-&gt;[FC-&gt;RELU]*2-&gt;FC</code>，这里每2个CONV后面有一个POOL，这样的结构在大的深度网络常常见到，在POOL层破坏特征前，连续多个CONV层可以提取更复杂的特征。</li>
+</ul>
+<p>宁愿使用连续多个小的滤波器，不使用一个大的滤波器。例如连续3个CONV，每层滤波器核大小都是3x3。第一层CONV对于INPUT感受视野是3x3，第二层CONV对于INPUT感受视野是5x5，第三层对于INPUT的感受视野是7x7；如果换用一层CONV，核大小为7x7，将会有以下缺点：1、一层对于输入来说是线性计算，三层具有很好的非线性，具有更强的表达能力。2、假设channel数为$C$，对于一层7x7卷积层，共有权重$C \times (7 \times 7 \times C) = 49C^2$，而三层3x3卷积，共有参数$3 \times (C \times (3 \times 3 \times C)) = 27C^2$。可以看出，连续的小卷积核，具有更少的参数和更强的表达能力；但是连续小的卷积核在训练时占用更多内存，因为在反向传播时需要用到中间结果。</p>
+<p><strong>最新进展</strong><br>上面提到的按照组合组成卷积网络方法已经收到挑战。来自Google的Inception结构和来自微软的Residual Networks没有按照上面方法设计网络结果；它们设计更加复杂。</p>
+<p><strong>实战经验：使用在ImageNet上效果好的任何方法</strong><br>90%的应用不需要过多思考如何设计网络架构。”don’t be a hero”:不是不断设计变换你自己的网络架构，你需要查看任何能在ImageNet挑战赛上表现性能好的网络，下载预训练模型，用自己数据finetune。很少情况需要你从头训练和设计，在<a href="https://www.youtube.com/watch?v=u6aEYuemt0M" target="_blank" rel="external">Deep Learning school</a>我也强调了这一点。</p>
+<h4 id="层大小设计模式">层大小设计模式</h4><p>到现在为止还没提及层中常规超参数；下面将先介绍这些超参数设计准则，然后来讨论：</p>
+<p><strong>输入层INPUT</strong>包含图像，其大小一般可以连续整除多个2。常见的包括32（CIFAR-10）,64,96(STL-10),224,384,512。</p>
+<p><strong>卷积层CONV</strong>使用核小的滤波器（3x3，最多5x5），步长$S=1$；如果输入输出height和width保持不变，那么使用零填充$P=(F-1)/2$。如果必须使用大的卷积核（例如7x7），通常在第一层使用。</p>
+<p><strong>池化层POOL</strong>是对输入数据在height和width上的下采样，最常见的下采样max-pooling，$F=2,S=2$，这样将会丢掉75%激活信息。还有一个也比较常见的，$F=3,S=2$。更大的池化层很少见，因为池化层会丢弃特征，太大的池化层影响性能。</p>
+<p><em>减少尺寸设计的问题</em><br>前面设计中，CONV输入输出heigh和width不变；如果步长大于1或不使用零填充，那么CONV也将会引起height和width减小，这时需要认真设计，确保数据和核大小匹配。</p>
+<p><em>为什么CONV中步长为1</em><br>在实践中，小步长效果更好。使用步长为1，输入输出在卷积空间大小保持不变，这样只有在POOL中下采样才会引起空间尺寸减小。</p>
+<p><strong>为什么使用padding</strong><br>在CONV使用padding，可以保持输入输出空间维度尺寸不变，也可以提升性能。如果在CONV不使用padding，经过CONV后，数据空间维度尺寸会略微减小，这样图像的边缘信息将会很快丢失掉。</p>
+<p><strong>基于内存限制的妥协</strong><br>卷积网络中，内存消耗很快，且会限制卷积网络。例如输入[224x224x3]的图像，使用64个3x3大小滤波器，零填充$P=1$，则输出为[224x224x64]。这个数量，将会有1千万激活，占用72M内存（每张图像，对于激活和梯度都是）。因为GPU显存的限制，常常要做出妥协；实践中，常常在第一层做出妥协，例如ZFnet第一层卷积核7x7，步长为2,AlexNet第一层卷积核7x7，步长为4。</p>
+<h3 id="实例">实例</h3><p>卷积网络中有几个经典网络：</p>
+<ul>
+<li><p><strong>LeNet</strong>，第一个成功的卷积网络，由Yann LeCun在九十年代发明。最出名的是<a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf" target="_blank" rel="external">它的架构</a>，已经应用到邮政编码和数字识别。</p>
+</li>
+<li><p><strong>AlexNet</strong>，第一个在机器视觉领域留下的<a href="http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks" target="_blank" rel="external">网络</a>，由Alex Krizhevsky, Ilya Sutskever and Geoff Hinton发明，赢得了2012年的<a href="http://www.image-net.org/challenges/LSVRC/2014/" target="_blank" rel="external"> ImageNet ILSVRC challenge</a>，识别率远远超过第二名（top 5 错误了16%，第二名为26%）。AlexNet类似LeNet，但是更深更广，使用了连续的CONV（之前都是CONV后跟着POOL）。</p>
+</li>
+<li><p><strong>ZF Net</strong>，2013年ILSVR冠军，由Zeiler和Rob Fergus发明，<a href="http://arxiv.org/abs/1311.2901" target="_blank" rel="external">ZF Net</a>是他们名字缩写。ZF Net是基于AlexNet微调而来，扩大了中间卷积层的尺寸，减小了第一个卷积层的核和步长。</p>
+</li>
+<li><p><strong>GoogLeNet</strong>,2014年ILSVR冠军，来自Google，由<a href="http://arxiv.org/abs/1409.4842" target="_blank" rel="external">Szegedy et al</a>发明。它的主要贡献在于发展了Inception结构，Inception架构可以减小参数个数（只有4M，相比AlexNet有60M）。它还在卷积层顶部使用平均池化层替代全连接层，减小了许多不重要的参数。后续还有几个版本，最新的为<a href="http://arxiv.org/abs/1602.07261" target="_blank" rel="external">inception-V4</a>。</p>
+</li>
+<li><p><strong>VGGNet</strong>，2014年ILSVRC的亚军是Simonyan and Andrew Zisserman发明的<a href="http://www.robots.ox.ac.uk/~vgg/research/very_deep/" target="_blank" rel="external">VGGNet</a>。VGGNet向我们证明了深度对于卷积网络的重要性。最终性能最优的网络是16层CONV/POOL，从输入到输出层结构相同，都是3x3卷积核2x2池化。<a href="http://www.robots.ox.ac.uk/~vgg/research/very_deep/" target="_blank" rel="external">预训练模型</a>可以在caffe上直接使用。VGGNet缺点是非常耗计算资源和内存，它有140M参数。大部分参数在第一个全连接层，后来发现它可以移去，且性能几乎不会有影响，因此减少了参数个数。</p>
+</li>
+<li><p><strong>ResNet</strong>，<a href="http://arxiv.org/abs/1512.03385" target="_blank" rel="external">Residual Network</a>由He等发明，赢得了2015 ILSVRC冠军。它的特点是使用了跳跃连接，大量使用了<a href="http://arxiv.org/abs/1502.03167" target="_blank" rel="external">batch normalization</a>。ResNet在网络的末端没有使用全连接层；可以参考Kaiming的报告(<a href="https://www.youtube.com/watch?v=1PGLj-uKT1w" target="_blank" rel="external">video</a><a href="http://research.microsoft.com/en-us/um/people/kahe/ilsvrc15/ilsvrc2015_deep_residual_learning_kaiminghe.pdf" target="_blank" rel="external">slides</a>)。它是目前（2016-05-10）最好的卷积网络。可以参考最近最这个网络的优化<a href="https://arxiv.org/abs/1603.05027" target="_blank" rel="external">Kaiming He et al. Identity Mappings in Deep Residual Networks </a>(2016-03发表）。</p>
+</li>
+</ul>
+<p><strong>详细分析VGGNet</strong><br>以VGGNet为例，详细分解。VGGNet由卷积层(核3x3，步长1，零填充1）和池化层（2x2max池化，步长2，没有零填充）。下面分解每一层的大小，并记录每层权重个数。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">INPUT:[<span class="number">224</span>x224x3]    memory:<span class="number">224</span>x224x3=<span class="number">150</span>k    weights:<span class="number">0</span></span><br><span class="line">CONV3-<span class="number">64</span>:[<span class="number">224</span>x224x64]    memory:<span class="number">224</span>x224x64=<span class="number">3.2</span>M    weights:(<span class="number">3</span>*<span class="number">3</span>*<span class="number">3</span>)*<span class="number">64</span>=<span class="number">1</span>,<span class="number">728</span></span><br><span class="line">CONV3-<span class="number">64</span>:[<span class="number">224</span>x224x64]    memory:<span class="number">224</span>x224x64=<span class="number">3.2</span>M    weights:(<span class="number">3</span>*<span class="number">3</span>*<span class="number">64</span>)*<span class="number">64</span>=<span class="number">36</span>,<span class="number">864</span></span><br><span class="line">POOL2: [<span class="number">112</span>x112x64]  memory:  <span class="number">112</span>*<span class="number">112</span>*<span class="number">64</span>=<span class="number">800</span>K   weights: <span class="number">0</span></span><br><span class="line">CONV3-<span class="number">128</span>: [<span class="number">112</span>x112x128]  memory:  <span class="number">112</span>*<span class="number">112</span>*<span class="number">128</span>=<span class="number">1.6</span>M   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">64</span>)*<span class="number">128</span> = <span class="number">73</span>,<span class="number">728</span></span><br><span class="line">CONV3-<span class="number">128</span>: [<span class="number">112</span>x112x128]  memory:  <span class="number">112</span>*<span class="number">112</span>*<span class="number">128</span>=<span class="number">1.6</span>M   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">128</span>)*<span class="number">128</span> = <span class="number">147</span>,<span class="number">456</span></span><br><span class="line">POOL2: [<span class="number">56</span>x56x128]  memory:  <span class="number">56</span>*<span class="number">56</span>*<span class="number">128</span>=<span class="number">400</span>K   weights: <span class="number">0</span></span><br><span class="line">CONV3-<span class="number">256</span>: [<span class="number">56</span>x56x256]  memory:  <span class="number">56</span>*<span class="number">56</span>*<span class="number">256</span>=<span class="number">800</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">128</span>)*<span class="number">256</span> = <span class="number">294</span>,<span class="number">912</span></span><br><span class="line">CONV3-<span class="number">256</span>: [<span class="number">56</span>x56x256]  memory:  <span class="number">56</span>*<span class="number">56</span>*<span class="number">256</span>=<span class="number">800</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">256</span>)*<span class="number">256</span> = <span class="number">589</span>,<span class="number">824</span></span><br><span class="line">CONV3-<span class="number">256</span>: [<span class="number">56</span>x56x256]  memory:  <span class="number">56</span>*<span class="number">56</span>*<span class="number">256</span>=<span class="number">800</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">256</span>)*<span class="number">256</span> = <span class="number">589</span>,<span class="number">824</span></span><br><span class="line">POOL2: [<span class="number">28</span>x28x256]  memory:  <span class="number">28</span>*<span class="number">28</span>*<span class="number">256</span>=<span class="number">200</span>K   weights: <span class="number">0</span></span><br><span class="line">CONV3-<span class="number">512</span>: [<span class="number">28</span>x28x512]  memory:  <span class="number">28</span>*<span class="number">28</span>*<span class="number">512</span>=<span class="number">400</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">256</span>)*<span class="number">512</span> = <span class="number">1</span>,<span class="number">179</span>,<span class="number">648</span></span><br><span class="line">CONV3-<span class="number">512</span>: [<span class="number">28</span>x28x512]  memory:  <span class="number">28</span>*<span class="number">28</span>*<span class="number">512</span>=<span class="number">400</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">512</span>)*<span class="number">512</span> = <span class="number">2</span>,<span class="number">359</span>,<span class="number">296</span></span><br><span class="line">CONV3-<span class="number">512</span>: [<span class="number">28</span>x28x512]  memory:  <span class="number">28</span>*<span class="number">28</span>*<span class="number">512</span>=<span class="number">400</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">512</span>)*<span class="number">512</span> = <span class="number">2</span>,<span class="number">359</span>,<span class="number">296</span></span><br><span class="line">POOL2: [<span class="number">14</span>x14x512]  memory:  <span class="number">14</span>*<span class="number">14</span>*<span class="number">512</span>=<span class="number">100</span>K   weights: <span class="number">0</span></span><br><span class="line">CONV3-<span class="number">512</span>: [<span class="number">14</span>x14x512]  memory:  <span class="number">14</span>*<span class="number">14</span>*<span class="number">512</span>=<span class="number">100</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">512</span>)*<span class="number">512</span> = <span class="number">2</span>,<span class="number">359</span>,<span class="number">296</span></span><br><span class="line">CONV3-<span class="number">512</span>: [<span class="number">14</span>x14x512]  memory:  <span class="number">14</span>*<span class="number">14</span>*<span class="number">512</span>=<span class="number">100</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">512</span>)*<span class="number">512</span> = <span class="number">2</span>,<span class="number">359</span>,<span class="number">296</span></span><br><span class="line">CONV3-<span class="number">512</span>: [<span class="number">14</span>x14x512]  memory:  <span class="number">14</span>*<span class="number">14</span>*<span class="number">512</span>=<span class="number">100</span>K   weights: (<span class="number">3</span>*<span class="number">3</span>*<span class="number">512</span>)*<span class="number">512</span> = <span class="number">2</span>,<span class="number">359</span>,<span class="number">296</span></span><br><span class="line">POOL2: [<span class="number">7</span>x7x512]  memory:  <span class="number">7</span>*<span class="number">7</span>*<span class="number">512</span>=<span class="number">25</span>K  weights: <span class="number">0</span></span><br><span class="line">FC: [<span class="number">1</span>x1x4096]  memory:  <span class="number">4096</span>  weights: <span class="number">7</span>*<span class="number">7</span>*<span class="number">512</span>*<span class="number">4096</span> = <span class="number">102</span>,<span class="number">760</span>,<span class="number">448</span></span><br><span class="line">FC: [<span class="number">1</span>x1x4096]  memory:  <span class="number">4096</span>  weights: <span class="number">4096</span>*<span class="number">4096</span> = <span class="number">16</span>,<span class="number">777</span>,<span class="number">216</span></span><br><span class="line">FC: [<span class="number">1</span>x1x1000]  memory:  <span class="number">1000</span> weights: <span class="number">4096</span>*<span class="number">1000</span> = <span class="number">4</span>,<span class="number">096</span>,<span class="number">000</span></span><br><span class="line"></span><br><span class="line">TOTAL memory: <span class="number">24</span>M * <span class="number">4</span> bytes ~= <span class="number">93</span>MB / image (only forward! ~*<span class="number">2</span> <span class="keyword">for</span> bwd)</span><br><span class="line">TOTAL params: <span class="number">138</span>M parameters</span><br></pre></td></tr></table></figure>
+<p>通常来说，卷积网络中，最前面几个卷积层占用了大部分内存，第一个全连接层占用了大部分参数。在这个例子中，第一个卷积层包含100M参数，参数总个数才140M。</p>
+<h2 id="计算资源考虑">计算资源考虑</h2><p>卷积网络最大限制在于内存，GPU内存一般为3/4/6G，当前最好的GPU大概有12G。有三种主要占用内存的来源：</p>
+<ul>
+<li><p>中间数据。每个卷积层都有激活的原始数据和梯度（它们大小相同），大部分的激活数据在前面几个卷积层中；要记录它们是因为在反向传播时需要使用。但是在测试时就可以释放前面激活层数据占用的内存。</p>
+</li>
+<li><p>参数。网络中有大量参数，反向传播时它们的梯度，如果使用momentum,Adagrad,RMSProp还要记录一步缓存，所以参数存储空间要在最原始基础上乘以3甚至更多。</p>
+</li>
+<li><p>卷积网络实现。实现还要占用各种混杂（<strong>miscellaneous</strong>）内存，例如图像批数据，它们的扩展数据等。</p>
+</li>
+</ul>
+<p>对参数（激活、梯度、混杂）个数有了大概估计后，应该转换为GB单位。单精度乘以4，双精度乘以8，得到占用字节数；最终换算成GB。如果占用内存过多，最简单办法是减小batch size；因为大部分内存是被激活数据占用。</p>
+<h2 id="额外资源">额外资源</h2><p>这些资源涉及到实现：</p>
+<ul>
+<li><a href="https://github.com/soumith/convnet-benchmarks" target="_blank" rel="external">Soumith benchmarks for CONV performance</a></li>
+<li><a href="http://cs.stanford.edu/people/karpathy/convnetjs/demo/cifar10.html" target="_blank" rel="external">ConvNetJS CIFAR-10 demo</a>在浏览器实时查看计算结果。</li>
+<li><a href="http://caffe.berkeleyvision.org/" target="_blank" rel="external">caffe</a>一个流行的卷积网络库。</li>
+<li><a href="http://torch.ch/blog/2016/02/04/resnets.html" target="_blank" rel="external">ResNet Torch7实现</a>。</li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2017年02月18日 - 21时51分</p>
+        <p><span>最后更新:</span>2017年04月12日 - 22时50分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/" title="cs231n-(7)卷积神经网络：架构，卷积层/池化层">http://kangbing.github.io/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">
+                    cs231n-(8)理解和可视化卷积网络
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">
+                    cs231n-(6)实现Minimal神经网络
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#架构总览"><span class="toc-number">1.</span> <span class="toc-text">架构总览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#常用的层"><span class="toc-number">1.1.</span> <span class="toc-text">常用的层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#卷积层"><span class="toc-number">1.2.</span> <span class="toc-text">卷积层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#概述"><span class="toc-number">1.2.1.</span> <span class="toc-text">概述</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#池化层"><span class="toc-number">1.3.</span> <span class="toc-text">池化层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#归一化层"><span class="toc-number">1.4.</span> <span class="toc-text">归一化层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#全连接层"><span class="toc-number">1.5.</span> <span class="toc-text">全连接层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#全连接层转为卷积层"><span class="toc-number">1.6.</span> <span class="toc-text">全连接层转为卷积层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#卷积网络架构"><span class="toc-number">1.7.</span> <span class="toc-text">卷积网络架构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#层模式"><span class="toc-number">1.7.1.</span> <span class="toc-text">层模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#层大小设计模式"><span class="toc-number">1.7.2.</span> <span class="toc-text">层大小设计模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实例"><span class="toc-number">1.8.</span> <span class="toc-text">实例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#计算资源考虑"><span class="toc-number">2.</span> <span class="toc-text">计算资源考虑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#额外资源"><span class="toc-number">3.</span> <span class="toc-text">额外资源</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+        <section class="youyan" id="comments">
+  <div id="uyan_frame"></div>
+  <script src="http://v2.uyan.cc/code/uyan.js?uid=2136539"></script>
+</section>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/" title="上一篇: cs231n-(8)理解和可视化卷积网络">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/02/18/cs231n-(6)实现Minimal神经网络/" title="下一篇: cs231n-(6)实现Minimal神经网络">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/06/25/MXNet/MXNet Data IO/">MXNet Data IO</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/14/MXNet/PS-Lite源码分析/">PS-Lite源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/26/Paper笔记/00010_Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition/">Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">Rich feature hierarchies for accurate object detection and semantic segmentation</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">Xception--Deep Learning with Depthwise Separable Convolutios</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">Residual Networks Behave Like Ensembles of Relatively Shallow Networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/Paper笔记/0003_Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift/">Batch Normalization--Accelerating Deep Network Training by Reducing Internal Covariate Shift</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/11/Paper笔记/0002_Understanding the difficulty of training deep feedforward neural networks/">Understanding the difficulty of training deep feedforward neural networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/22/Paper笔记/0001_ILSVRC历届冠军论文笔记/">ILSVRC历届冠军论文笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(9)迁移学习和Fine-tune网络/">cs231n-(9)迁移学习和Fine-tune网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">cs231n-(8)理解和可视化卷积网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/Python实现三层神经网络/">Python实现三层神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">cs231n-(5)神经网络-3：学习和评估</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2017 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>
