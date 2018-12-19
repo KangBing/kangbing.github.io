@@ -11,9 +11,9 @@
 <meta property="og:url" content="http://kangbing.github.io/2017/11/04/MXNet/自动微分/index.html">
 <meta property="og:site_name" content="KangBing's Blog">
 <meta property="og:description" content="机器学习常常转换为最优化问题。最优化问题往往没有闭式解，一般使用梯度下降法求解。梯度下降法需要用微分求梯度，自动微分是各个机器学习框架都支持的。">
-<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/autodiff_01.png">
-<meta property="og:image" content="http://7xras4.com1.z0.glb.clouddn.com/autodiff_02.png">
-<meta property="og:updated_time" content="2017-11-04T13:56:59.635Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/KangBing/blog-img/master/blog/autodiff_01.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/KangBing/blog-img/master/blog/autodiff_02.png">
+<meta property="og:updated_time" content="2018-12-19T15:27:14.418Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="自动微分">
 <meta name="twitter:description" content="机器学习常常转换为最优化问题。最优化问题往往没有闭式解，一般使用梯度下降法求解。梯度下降法需要用微分求梯度，自动微分是各个机器学习框架都支持的。">
@@ -293,10 +293,10 @@
 <h3 id="自动微分">自动微分</h3><p>自动微分是数值求解和符号求解的结合。数值求解是带入数值进行计算，符号求解是通过链式法则求解微分表达式，之后带入数值计算。</p>
 <p>自动微分法是通过符号求解求得微分表达式，之后立刻带入数值进行计算，保留中间结果；将这样的方法应用到整个函数表达式即可。</p>
 <h2 id="Forward_mode和Backward_mode">Forward mode和Backward mode</h2><p>在说明Forward和Backward之前，先了解一下计算图</p>
-<h3 id="计算图">计算图</h3><p>计算图是把有依赖关系的计算表达式按照拓扑排序组成的图形结构。例如$e = (a + b) <em> (b + 1)$，可以分成一下运算<br>$$c = a + b$$<br>$$d = b + 1$$<br>$$e = c </em> d$$<br>上述计算构建成计算图：<br><img src="http://7xras4.com1.z0.glb.clouddn.com/autodiff_01.png" alt=""></p>
+<h3 id="计算图">计算图</h3><p>计算图是把有依赖关系的计算表达式按照拓扑排序组成的图形结构。例如$e = (a + b) <em> (b + 1)$，可以分成一下运算<br>$$c = a + b$$<br>$$d = b + 1$$<br>$$e = c </em> d$$<br>上述计算构建成计算图：<br><img src="https://raw.githubusercontent.com/KangBing/blog-img/master/blog/autodiff_01.png" alt=""></p>
 <p>图中的有向边表示依赖关系，结点表示输入/输出/中间结果，结点还带有一个操作符（输入结点的操作是赋值）。计算表达式只需要按照计算图从下向上计算即可。</p>
 <p>Forward和Backward是指计算导数的方式。计算表示式结果只有Forward模式，但是计算导数有两种方式。</p>
-<h3 id="Forward_mode和Backward_mode-1">Forward mode和Backward mode</h3><p>所谓Forward mode和Backward mode是指计算导数时，是从下往上还是从上往下。例如根据计算求得每个边的导数<br><img src="http://7xras4.com1.z0.glb.clouddn.com/autodiff_02.png" alt=""></p>
+<h3 id="Forward_mode和Backward_mode-1">Forward mode和Backward mode</h3><p>所谓Forward mode和Backward mode是指计算导数时，是从下往上还是从上往下。例如根据计算求得每个边的导数<br><img src="https://raw.githubusercontent.com/KangBing/blog-img/master/blog/autodiff_02.png" alt=""></p>
 <p>计算$\frac{\partial e}{\partial b}$的<strong>Forward mode</strong><br>$$<br>\frac{\partial e}{\partial b} = \frac{\partial c}{ \partial b} \frac{\partial e}{\partial c} + \frac{\partial d}{ \partial b} \frac{\partial e}{\partial d} = 1 <em> 2 + 1 </em> 3 = 5<br>$$</p>
 <p>计算$\frac{\partial e}{\partial b}$的<strong>Backward mode</strong><br>$$<br>\frac{\partial e}{\partial b} = \frac{\partial e}{\partial c} \frac{\partial c}{ \partial b} + \frac{\partial e}{\partial d} \frac{\partial d}{ \partial b} = 2 <em> 1 + 3 </em> 1 = 5<br>$$</p>
 <p>Forward mode和计算表达式结果顺序一致，Back ward是从结果向前运算。</p>
@@ -316,7 +316,7 @@
         <p><span>本文标题:</span><a href="/2017/11/04/MXNet/自动微分/">自动微分</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
         <p><span>发布时间:</span>2017年11月04日 - 22时53分</p>
-        <p><span>最后更新:</span>2017年11月04日 - 21时56分</p>
+        <p><span>最后更新:</span>2018年12月19日 - 23时27分</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2017/11/04/MXNet/自动微分/" title="自动微分">http://kangbing.github.io/2017/11/04/MXNet/自动微分/</a>
             <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2017/11/04/MXNet/自动微分/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -465,7 +465,7 @@
     <div class="outer">
         <div id="footer-info">
             <div class="footer-left">
-                &copy; 2017 KangBing
+                &copy; 2018 KangBing
             </div>
             <div class="footer-right">
                 <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
