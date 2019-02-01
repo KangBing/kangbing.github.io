@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>POD类型 | KangBing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="C++中的POD类型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="POD类型">
+<meta property="og:url" content="http://kangbing.github.io/2019/02/01/C++/POD类型/index.html">
+<meta property="og:site_name" content="KangBing's Blog">
+<meta property="og:description" content="C++中的POD类型">
+<meta property="og:updated_time" content="2019-02-01T14:38:14.820Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="POD类型">
+<meta name="twitter:description" content="C++中的POD类型">
+  
+    <link rel="alternative" href="/atom.xml" title="KangBing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+  
+      <script>
+          var _hmt = _hmt || [];
+          (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?1ad2f92496bbe7f551683e065f125883";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+          })();
+      </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">KangBing</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">A Championship Heart!</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">分类和标签</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/AutoDiff/" style="font-size: 10px;">AutoDiff</a> <a href="/tags/BatchNorm/" style="font-size: 10px;">BatchNorm</a> <a href="/tags/DeepLearning/" style="font-size: 20px;">DeepLearning</a> <a href="/tags/Depthwise/" style="font-size: 10px;">Depthwise</a> <a href="/tags/Ensembles/" style="font-size: 10px;">Ensembles</a> <a href="/tags/Inception/" style="font-size: 12.5px;">Inception</a> <a href="/tags/Inception-V3/" style="font-size: 10px;">Inception-V3</a> <a href="/tags/Inception-V4/" style="font-size: 10px;">Inception-V4</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/ParameterServer/" style="font-size: 10px;">ParameterServer</a> <a href="/tags/Protocol-BUffers/" style="font-size: 10px;">Protocol BUffers</a> <a href="/tags/R-CNN/" style="font-size: 10px;">R-CNN</a> <a href="/tags/Residual/" style="font-size: 12.5px;">Residual</a> <a href="/tags/SGD/" style="font-size: 10px;">SGD</a> <a href="/tags/SPP-net/" style="font-size: 10px;">SPP-net</a> <a href="/tags/Xavier/" style="font-size: 10px;">Xavier</a> <a href="/tags/Xception/" style="font-size: 10px;">Xception</a> <a href="/tags/backforward/" style="font-size: 10px;">backforward</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cs231n/" style="font-size: 17.5px;">cs231n</a> <a href="/tags/feature/" style="font-size: 10px;">feature</a> <a href="/tags/glog/" style="font-size: 10px;">glog</a> <a href="/tags/google/" style="font-size: 12.5px;">google</a> <a href="/tags/kNN/" style="font-size: 10px;">kNN</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/softmax/" style="font-size: 10px;">softmax</a> <a href="/tags/数值计算/" style="font-size: 10px;">数值计算</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/概率/" style="font-size: 10px;">概率</a> <a href="/tags/神经网络/" style="font-size: 15px;">神经网络</a> <a href="/tags/线性代数/" style="font-size: 10px;">线性代数</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">专注写代码</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">KangBing</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">KangBing</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">A Championship Heart!</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">分类和标签</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:kangyabing@126.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="/#" title="GitHub"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-C++/POD类型" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/02/01/C++/POD类型/" class="article-date">
+      <time datetime="2019-02-01T14:36:14.000Z" itemprop="datePublished">2019-02-01</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      POD类型
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/C/">C++</a>
+    </div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>C++中的POD类型</p>
+<ul>
+<li><a id="more"></a>
+</li>
+</ul>
+<p>POD类型是C++中常见的概念，用来说明类/结构体的属性，具体来说它是指没有使用面相对象的思想来设计的类/结构体。POD的全称是Plain Old Data，Plain表明它是一个普通的类型，没有虚函数虚继承等特性；Old表明它与C兼容。</p>
+<p>POD类型在C++中有两个独立的特性：</p>
+<ul>
+<li>支持静态初始化（static initialization）</li>
+<li>拥有和C语言一样的内存布局（memory layout）</li>
+</ul>
+<p>这两个特性分布对应两个概念：<em>trivial classes</em>和<em>standard-layout</em>。现在提起POD类型通常是指有这两个特性的类，且这个类的非静态成员也是POD类型。</p>
+<h2 id="Trivial_classes">Trivial classes</h2><p>trivial classes支持静态初始化（static initizlization），如果一个类包含以下特点，那么它就是trivial class:</p>
+<ul>
+<li>所有的拷贝构造函数都是trivial</li>
+<li>所有的移动构造函数都是trivial</li>
+<li>所有鹅赋值操作符都是trivial</li>
+<li>所有的移动赋值操作符都是trivial</li>
+<li>默认构造函数和析构函数是trivial</li>
+</ul>
+<p>这里说的trivial构造函数是编译器生成的构造函数，而不是用户自定义的；且它的基类也有这样的特性。C++11中的模版<code>template &lt;typename T&gt; struct std::is_trivial</code>可判断类是否是trivial。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="comment">// empty classes are trivial</span></span><br><span class="line"><span class="keyword">struct</span> Trivial1 &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// all special members are implicit</span></span><br><span class="line"><span class="keyword">struct</span> Trivial2 &#123;</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Trivial3 : Trivial2 &#123; <span class="comment">// base class is trivial</span></span><br><span class="line">    Trivial3() = <span class="keyword">default</span>; <span class="comment">// not a user-provided ctor</span></span><br><span class="line">    <span class="keyword">int</span> y;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Trivial4 &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line"><span class="keyword">private</span>: <span class="comment">// no restrictions on access modifiers</span></span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Trivial5 &#123;</span><br><span class="line">    Trivial1 a;</span><br><span class="line">    Trivial2 b;</span><br><span class="line">    Trivial3 c;</span><br><span class="line">    Trivial4 d;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Trivial6 &#123;</span><br><span class="line">    Trivial2 a[<span class="number">23</span>];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Trivial7 &#123;</span><br><span class="line">    Trivial6 c;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">()</span></span>; <span class="comment">// it's okay to have non-virtual functions</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Trivial8 &#123;</span><br><span class="line">     Trivial8() = <span class="keyword">default</span>; <span class="comment">// not user-provided</span></span><br><span class="line">      <span class="comment">// a regular constructor is okay because we still have default ctor</span></span><br><span class="line">     Trivial8(<span class="keyword">int</span> x) : x(x) &#123;&#125;;</span><br><span class="line">     <span class="keyword">int</span> x;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> NonTrivial1 : Trivial3 &#123;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">f</span><span class="params">()</span></span>; <span class="comment">// virtual members make non-trivial ctors</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Trivial9 &#123;</span><br><span class="line">     <span class="keyword">int</span> x;</span><br><span class="line">     <span class="keyword">static</span> NonTrivial1 y; <span class="comment">// no restrictions on static members</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> NonTrivial2 &#123;</span><br><span class="line">    NonTrivial2() : z(<span class="number">42</span>) &#123;&#125; <span class="comment">// user-provided ctor</span></span><br><span class="line">    <span class="keyword">int</span> z;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> NonTrivial3 &#123;</span><br><span class="line">    NonTrivial3(); <span class="comment">// user-provided ctor</span></span><br><span class="line">    <span class="keyword">int</span> w;</span><br><span class="line">&#125;;</span><br><span class="line">NonTrivial3::NonTrivial3() = <span class="keyword">default</span>; <span class="comment">// defaulted but not on first declaration</span></span><br><span class="line">                                      <span class="comment">// still counts as user-provided</span></span><br><span class="line"><span class="keyword">struct</span> NonTrivial4 &#123;</span><br><span class="line">    <span class="keyword">virtual</span> ~NonTrivial4(); <span class="comment">// virtual destructors are not trivial</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial1&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial2&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial3&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial4&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial5&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial6&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial7&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial8&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;Trivial9&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;NonTrivial1&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;NonTrivial2&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;NonTrivial3&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_trivial&lt;NonTrivial4&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Standard-layout">Standard-layout</h2><p>这里的standard是指可以和其他语言通信，因为standard-lay类型的内部布局和C结构体一样。Standard layout定义如下：</p>
+<ul>
+<li>所有非静态成员都是standard-layout</li>
+<li>没有虚函数和虚基类</li>
+<li>非静态成员访问控制权一样</li>
+<li>基类是standard-lay</li>
+<li>没有静态成员变量，或者在整个继承树中，只有一个类有静态成员变量。</li>
+<li>第一个非静态成员不是基类</li>
+</ul>
+<p>C++11中可以使用<code>template &lt;typename T&gt;struct std::is_standard_layout</code>判断一个类是否是standard-layout。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// empty classes have standard-layout</span></span><br><span class="line"><span class="keyword">struct</span> StandardLayout1 &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> StandardLayout2 &#123;</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> StandardLayout3 &#123;</span><br><span class="line"><span class="keyword">private</span>: <span class="comment">// both are private, so it's ok</span></span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">    <span class="keyword">int</span> y;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> StandardLayout4 : StandardLayout1 &#123;</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">    <span class="keyword">int</span> y;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">()</span></span>; <span class="comment">// perfectly fine to have non-virtual functions</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> StandardLayout5 : StandardLayout1 &#123;</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">    StandardLayout1 y; <span class="comment">// can have members of base type if they're not the first</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> StandardLayout6 : StandardLayout1, StandardLayout5 &#123;</span><br><span class="line">    <span class="comment">// can use multiple inheritance as long only</span></span><br><span class="line">    <span class="comment">// one class in the hierarchy has non-static data members</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> StandardLayout7 &#123;</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">    <span class="keyword">int</span> y;</span><br><span class="line">    StandardLayout7(<span class="keyword">int</span> x, <span class="keyword">int</span> y) : x(x), y(y) &#123;&#125; <span class="comment">// user-provided ctors are ok</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> StandardLayout8 &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    StandardLayout8(<span class="keyword">int</span> x) : x(x) &#123;&#125; <span class="comment">// user-provided ctors are ok</span></span><br><span class="line"><span class="comment">// ok to have non-static data members and other members with different access</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> NonStandardLayout1 &#123;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">f</span><span class="params">()</span> </span>&#123;&#125;; <span class="comment">// cannot have virtual functions</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> StandardLayout9 &#123;</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">    <span class="keyword">static</span> NonStandardLayout1 y; <span class="comment">// no restrictions on static members</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> NonStandardLayout2 &#123;</span><br><span class="line">    NonStandardLayout1 X; <span class="comment">// has non-standard-layout member</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> NonStandardLayout3 : StandardLayout1 &#123;</span><br><span class="line">    StandardLayout1 x; <span class="comment">// first member cannot be of the same type as base</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> NonStandardLayout4 : StandardLayout3 &#123;</span><br><span class="line">    <span class="keyword">int</span> z; <span class="comment">// more than one class has non-static data members</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> NonStandardLayout5 : NonStandardLayout3 &#123;&#125;; <span class="comment">// has a non-standard-layout base class</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout1&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout2&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout3&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout4&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout5&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout6&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout7&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout8&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;StandardLayout9&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;NonStandardLayout1&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;NonStandardLayout2&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;NonStandardLayout3&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;NonStandardLayout4&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::is_standard_layout&lt;NonStandardLayout5&gt;::value &lt;&lt; <span class="built_in">std</span>::endl; <span class="comment">// 0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="优点">优点</h2><p>POD类型相对非POD类型有以下优点：<br>1、字节赋值。POD类型变量可以不使用构造函数、赋值操作符赋值，直接通过<code>memset()</code>、<code>memcpy()</code>初始化赋值。<br>2、兼容C内存布局。C++程序可以和C进行交互，或者可以和其他语言交互。<br>3、保证静态初始化安全有效。静态初始化很多时候可以提高程序性能，POD类型初始化更加简单。</p>
+<h2 id="参考">参考</h2><p><a href="https://en.wikipedia.org/wiki/Passive_data_structure" target="_blank" rel="external">Passive data structure</a></p>
+<p><a href="https://stackoverflow.com/questions/4178175/what-are-aggregates-and-pods-and-how-why-are-they-special/7189821#7189821" target="_blank" rel="external">what-are-aggregates-and-pods-and-how-why-are-they-special</a></p>
+<p>《深入理解C++11》</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2019/02/01/C++/POD类型/">POD类型</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 KangBing 的个人博客">KangBing</a></p>
+        <p><span>发布时间:</span>2019年02月01日 - 22时36分</p>
+        <p><span>最后更新:</span>2019年02月01日 - 22时38分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2019/02/01/C++/POD类型/" title="POD类型">http://kangbing.github.io/2019/02/01/C++/POD类型/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://kangbing.github.io/2019/02/01/C++/POD类型/　　作者: KangBing" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2018/12/28/C++/C++11中的内存模型/">
+                    C++11中的内存模型
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Trivial_classes"><span class="toc-number">1.</span> <span class="toc-text">Trivial classes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Standard-layout"><span class="toc-number">2.</span> <span class="toc-text">Standard-layout</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优点"><span class="toc-number">3.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+        <section class="youyan" id="comments">
+  <div id="uyan_frame"></div>
+  <script src="http://v2.uyan.cc/code/uyan.js?uid=2136539"></script>
+</section>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2018/12/28/C++/C++11中的内存模型/" title="下一篇: C++11中的内存模型">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/02/01/C++/POD类型/">POD类型</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/28/C++/C++11中的内存模型/">C++11中的内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/04/MXNet/自动微分/">自动微分</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/25/MXNet/MXNet Data IO/">MXNet Data IO</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/14/MXNet/PS-Lite源码分析/">PS-Lite源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/26/Paper笔记/00010_Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition/">Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/Paper笔记/0009_Rich feature hierarchies for accurate object detection and semantic segmentation/">Rich feature hierarchies for accurate object detection and semantic segmentation</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/Paper笔记/0008_A Neural Algorithm of Artistic Style/">A Neural Algorithm of Artistic Style</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/09/Paper笔记/0007_Xception Deep Learning with Depthwise Separable Convolutios/">Xception--Deep Learning with Depthwise Separable Convolutios</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/Paper笔记/0006_Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning/">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/Paper笔记/0005_Rethinking the Inception Architecture for Computer Vision/">Rethinking the Inception Architecture for Computer Vision</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/31/Paper笔记/0004_Residual Networks Behave Like Ensembles of Relatively Shallow Networks/">Residual Networks Behave Like Ensembles of Relatively Shallow Networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/Paper笔记/0003_Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift/">Batch Normalization--Accelerating Deep Network Training by Reducing Internal Covariate Shift</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/11/Paper笔记/0002_Understanding the difficulty of training deep feedforward neural networks/">Understanding the difficulty of training deep feedforward neural networks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/22/Paper笔记/0001_ILSVRC历届冠军论文笔记/">ILSVRC历届冠军论文笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(9)迁移学习和Fine-tune网络/">cs231n-(9)迁移学习和Fine-tune网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(8)理解和可视化卷积网络/">cs231n-(8)理解和可视化卷积网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(7)卷积神经网络：架构，卷积层,池化层/">cs231n-(7)卷积神经网络：架构，卷积层/池化层</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/cs231n-(6)实现Minimal神经网络/">cs231n-(6)实现Minimal神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/Python实现三层神经网络/">Python实现三层神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/22/cs231n-(5)神经网络-3：学习和评估/">cs231n-(5)神经网络-3：学习和评估</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/cs231n-(5)神经网络-2：设置数据和Loss/">cs231n-(5)神经网络-2：设置数据和Loss</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(4)-数值计算/">《Deep Learning》(4)-数值计算</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(3)-概率和信息论/">《Deep Learning》(3)-概率和信息论</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(2)-线性代数/">《Deep Learning》(2)-线性代数</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/《Deep Learning》(1)-介绍/">《Deep Learning》(1)-介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/06/cs231n-(5)神经网络-1：建立架构/">cs231n-(5)神经网络-1：建立架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(4)反向传播/">cs231n-(4)反向传播</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(3)最优化：随机梯度下降/">cs231n-(3)最优化：随机梯度下降</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(2)线性分类器：SVM和Softmax/">cs231n-(2)线性分类器：SVM和Softmax</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/04/cs231n-(1)图像分类和kNN/">cs231n-(1)图像分类和kNN</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/21/机器学习(7)-神经网络预测练习/">机器学习(7)-神经网络预测练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/15/机器学习(6)-神经网络/">机器学习(6)-神经网络</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/09/机器学习(5)-逻辑回归练习/">机器学习(5)-逻辑回归练习</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/07/机器学习(4)-正则化/">机器学习(4)-正则化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/06/机器学习(3)-逻辑回归/">机器学习(3)-逻辑回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/机器学习(2)-线性回归/">机器学习(2)-线性回归</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/27/机器学习(1)-概念/">机器学习(1)-概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/18/Google-Logging-Library-glog-使用/">Google Logging Library(glog)使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/获取目录下的所有子目录和文件/">获取目录下的所有子目录和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/21/Google Protocol BUffers使用/">Google Protocol BUffers使用</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2019 KangBing
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的静态博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减双栏 Hexo 博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+#add by kangyabing
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>
